@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#08080A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Intrun · Epilepsia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{min-height:100dvh;background:#08080A;color:#F0F0F2;font-family:'Syne',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{display:none}
+button{font-family:'Syne',sans-serif;cursor:pointer;border:none;background:none}
+textarea,input,select{font-family:'Syne',sans-serif}
+:root{
+  --bg:#08080A;--s1:#0F0F12;--s2:#141418;--s3:#1A1A20;
+  --b1:#1E1E26;--b2:#26262F;--b3:#2E2E3A;
+  --t1:#F0F0F2;--t2:#7A7A8A;--t3:#3A3A48;
+  --acc:#5EEAD4;--acc3:rgba(94,234,212,.08);
+  --low:#5EEAD4;--mid:#FBBF24;--hgh:#F87171;
+}
+#root{max-width:430px;margin:0 auto;min-height:100dvh;background:var(--bg)}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top) + .5rem) 1.25rem .75rem;
+  background:rgba(8,8,10,.92);border-bottom:1px solid var(--b1);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.brand{font-size:1rem;font-weight:700;letter-spacing:.06em;color:var(--t1)}
+.brand span{color:var(--acc)}
+.topbar-r{display:flex;align-items:center;gap:.75rem}
+.dot{display:inline-block;width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--acc);position:relative}
+.pulse::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1.5px solid var(--acc);opacity:.4;animation:ring 2s ease-out infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.4}100%{transform:scale(2.4);opacity:0}}
+.live-lbl{font-size:.62rem;color:var(--acc);letter-spacing:.06em}
+.sync-badge{display:flex;align-items:center;gap:.375rem;font-size:.62rem;color:var(--t3)}
+
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:50;
+  display:flex;justify-content:space-around;align-items:center;
+  padding:.625rem 0 calc(.625rem + env(safe-area-inset-bottom));
+  background:rgba(8,8,10,.96);border-top:1px solid var(--b1);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.nb{display:flex;flex-direction:column;align-items:center;gap:.3rem;color:var(--t3);padding:.375rem .875rem;transition:color .15s}
+.nb.on{color:var(--acc)}
+.nb span{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase}
+
+/* Screens */
+.screen{display:none;flex-direction:column;gap:.875rem;padding:1rem 1rem calc(5.5rem + env(safe-area-inset-bottom));animation:fadein .2s ease}
+.screen.on{display:flex}
+@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* Page header */
+.ph{padding:.5rem 0 .25rem}
+.ph-eye{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:.375rem}
+.ph-title{font-size:1.375rem;font-weight:300;color:var(--t1);line-height:1.2}
+.ph-title em{color:var(--acc);font-style:normal;font-weight:500}
+
+/* Cards */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:1.125rem;overflow:hidden}
+.cp{padding:1.25rem}
+.slabel{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);display:block;margin-bottom:.875rem}
+.badge{display:inline-flex;align-items:center;font-size:.58rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:999px}
+
+/* Alert banner */
+.alert-banner{display:flex;align-items:flex-start;gap:.75rem;padding:.875rem 1rem;border-radius:1rem;font-size:.8rem;line-height:1.55}
+
+/* Log btn */
+.log-btn{display:flex;align-items:center;justify-content:center;gap:.625rem;width:100%;padding:1.125rem;
+  border-radius:1.125rem;background:var(--acc3);border:1px solid rgba(94,234,212,.18);
+  color:var(--acc);font-size:.73rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:all .15s}
+.log-btn:active{transform:scale(.98)}
+
+/* Vitals grid */
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.125rem;margin-bottom:1.125rem}
+.vital{display:flex;flex-direction:column;gap:.25rem}
+.vlbl{display:flex;align-items:center;gap:.375rem;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t2)}
+.vval{font-size:1.625rem;font-weight:300;font-family:'DM Mono',monospace;color:var(--t1);line-height:1}
+.vunit{font-size:.7rem;color:var(--t2);margin-left:.2rem}
+
+/* HR bars */
+.hr-bars{display:flex;align-items:flex-end;gap:2px;height:44px;width:100%}
+.hr-bar{flex:1;border-radius:2px 2px 0 0;min-height:2px}
+
+/* Factor rows */
+.factor{display:flex;align-items:center;justify-content:space-between;padding:.3rem 0}
+.flbl{font-size:.75rem;color:var(--t2)}
+.fval{display:flex;align-items:center;gap:.375rem;font-size:.75rem;font-family:'DM Mono',monospace;color:var(--t1)}
+
+/* Events */
+.ev-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 0}
+.ev-item+.ev-item{border-top:1px solid var(--b1)}
+.ev-ico{width:34px;height:34px;border-radius:.75rem;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.ev-name{font-size:.875rem;color:var(--t1);font-weight:500}
+.ev-note{font-size:.72rem;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:185px}
+.ev-time{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--t3);margin-left:auto;flex-shrink:0}
+.more-link{font-size:.65rem;color:var(--t3)}
+
+/* Heatmap */
+.hmap{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.hmap-cell{aspect-ratio:1;border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-family:'DM Mono',monospace;font-weight:500}
+.hmap-day{text-align:center;font-size:.5rem;color:var(--t3);margin-top:.25rem}
+
+/* All events */
+.ev-row{display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:.875rem;background:var(--s2);margin-bottom:.5rem}
+.ev-row-meta{text-align:right;flex-shrink:0}
+.ev-row-t{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--t3)}
+.ev-row-d{font-size:.6rem;color:var(--t3)}
+
+/* Insights */
+.insight{background:var(--s1);border:1px solid var(--b1);border-radius:1.125rem}
+.ins-body{display:flex;align-items:flex-start;gap:.875rem;padding:1.25rem}
+.ins-ico{width:38px;height:38px;border-radius:.875rem;display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0;margin-top:.125rem}
+.ins-ttl{font-size:.875rem;font-weight:500;color:var(--t1);margin-bottom:.25rem}
+.ins-desc{font-size:.75rem;color:var(--t2);line-height:1.6;margin-bottom:.75rem}
+.ins-act{font-size:.7rem;padding:.375rem .875rem;border-radius:.625rem;font-family:'Syne',sans-serif}
+
+/* Profile */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:1.125rem;padding:1rem;text-align:center}
+.stat-val{font-size:1.625rem;font-weight:300;font-family:'DM Mono',monospace;color:var(--acc);margin-bottom:.25rem}
+.stat-lbl{font-size:.65rem;color:var(--t2)}
+.conn-row{display:flex;align-items:center;gap:.75rem;padding:.875rem 0}
+.conn-row+.conn-row{border-top:1px solid var(--b1)}
+.conn-ico{width:34px;height:34px;border-radius:.75rem;background:var(--s2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+.conn-name{font-size:.875rem;color:var(--t1)}
+.conn-sub{font-size:.7rem;color:var(--t2)}
+.med-row{display:flex;align-items:center;gap:.75rem;padding:.75rem 0}
+.med-row+.med-row{border-top:1px solid var(--b1)}
+
+/* Modal */
+.overlay{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;
+  padding:1rem;background:rgba(0,0,0,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.overlay.on{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:1.5rem;padding:1.5rem;
+  width:100%;max-width:430px;animation:slideup .22s cubic-bezier(.4,0,.2,1)}
+@keyframes slideup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.modal-ttl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t2)}
+.close-btn{width:28px;height:28px;border-radius:.5rem;background:var(--s2);display:flex;align-items:center;justify-content:center;color:var(--t2)}
+
+/* Etype grid */
+.etype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;margin-bottom:1.125rem}
+.etype-btn{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:.875rem .5rem;
+  border-radius:1rem;background:var(--s2);border:1.5px solid transparent;transition:all .15s;font-family:'Syne',sans-serif}
+.etype-btn.on{background:var(--acc3)}
+.etype-ico{font-size:1.25rem}
+.etype-lbl{font-size:.65rem;color:var(--t2);text-align:center}
+
+/* Slider */
+.slider-wrap{margin-bottom:1rem;display:none}
+.slider-hdr{display:flex;justify-content:space-between;margin-bottom:.5rem}
+.slider-lbl{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t2)}
+.slider-num{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--acc)}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:4px;background:var(--b2);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 0 4px rgba(94,234,212,.12)}
+
+/* Note */
+.note-wrap{display:none;margin-bottom:1rem}
+.note-input{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:1rem;
+  padding:.875rem 1rem;font-size:.875rem;color:var(--t1);resize:none;outline:none}
+.note-input::placeholder{color:var(--t3)}
+
+/* Save btn */
+.save-btn{width:100%;padding:.9rem;border-radius:1rem;font-size:.7rem;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;transition:all .2s;font-family:'Syne',sans-serif}
+.save-btn.ready{background:var(--acc);color:var(--bg)}
+.save-btn.idle{background:var(--s3);color:var(--t3)}
+
+/* Toast */
+.toast{position:fixed;top:5.5rem;left:50%;transform:translateX(-50%) translateY(-10px);
+  padding:.5rem 1.5rem;border-radius:999px;font-size:.8rem;font-weight:600;
+  z-index:70;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--acc);color:var(--bg)}
+.toast.err{background:var(--hgh);color:#fff}
+
+/* Loading & empty */
+.loading{display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--t3);font-size:.8rem;gap:.5rem}
+.spin{width:14px;height:14px;border:2px solid var(--b2);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:2rem 1rem;color:var(--t3);font-size:.8rem;line-height:1.6}
+
+/* Login screen */
+.login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100dvh;padding:2rem;gap:1.5rem}
+.login-logo{font-size:2rem;font-weight:700;letter-spacing:.04em;color:var(--t1)}
+.login-logo span{color:var(--acc)}
+.login-sub{font-size:.8rem;color:var(--t2);text-align:center;line-height:1.6;max-width:260px}
+.login-card{background:var(--s1);border:1px solid var(--b1);border-radius:1.5rem;padding:1.5rem;width:100%}
+.login-input{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:.875rem;
+  padding:.875rem 1rem;font-size:.875rem;color:var(--t1);outline:none;margin-bottom:.75rem;display:block}
+.login-input::placeholder{color:var(--t3)}
+.login-input:focus{border-color:rgba(94,234,212,.3)}
+.login-btn{width:100%;padding:.9rem;border-radius:.875rem;background:var(--acc);color:var(--bg);
+  font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  font-family:'Syne',sans-serif;transition:opacity .15s;margin-bottom:.75rem}
+.login-btn:active{opacity:.8}
+.login-toggle{font-size:.75rem;color:var(--t2);text-align:center;cursor:pointer}
+.login-toggle b{color:var(--acc);cursor:pointer}
+.login-err{font-size:.75rem;color:var(--hgh);text-align:center;margin-bottom:.75rem;display:none}
+</style>
+</head>
+<body>
+<div id="root">
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-wrap">
+  <div>
+    <div class="login-logo">Intr<span>un</span></div>
+  </div>
+  <p class="login-sub">Monitoreo inteligente para pacientes con epilepsia</p>
+  <div class="login-card">
+    <p id="login-err" class="login-err"></p>
+    <input class="login-input" id="li-email" type="email" placeholder="Email"/>
+    <input class="login-input" id="li-pass" type="password" placeholder="Contraseña"/>
+    <button class="login-btn" onclick="doAuth()">Ingresar</button>
+    <p class="login-toggle">¿No tenés cuenta? <b onclick="toggleMode()">Registrarse</b></p>
+    <p id="mode-lbl" style="font-size:.65rem;color:var(--t3);text-align:center;margin-top:.5rem">Modo: iniciar sesión</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-shell" style="display:none">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">Intr<span>un</span></div>
+  <div class="topbar-r">
+    <div class="sync-badge" id="sync-lbl">
+      <span class="dot" style="background:var(--t3)"></span>
+      Cargando...
+    </div>
+    <div style="display:flex;align-items:center;gap:.375rem">
+      <div class="pulse"></div>
+      <span class="live-lbl">en vivo</span>
+    </div>
+  </div>
+</header>
+
+<!-- DASHBOARD -->
+<section class="screen on" id="s-dash">
+  <div class="ph">
+    <p class="ph-eye" id="today-str"></p>
+    <h1 class="ph-title">Buen día, <em id="user-name">–</em></h1>
+  </div>
+
+  <div class="alert-banner" id="alert-banner" style="display:none"></div>
+
+  <!-- Risk card -->
+  <div class="card"><div class="cp">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+      <span class="slabel" style="margin:0">Índice de riesgo</span>
+      <span class="badge" id="risk-badge" style="background:rgba(94,234,212,.1);color:var(--acc)">–</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <svg width="130" height="76" viewBox="0 0 130 76" style="flex-shrink:0">
+        <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#5EEAD4"/>
+          <stop offset="55%" stop-color="#FBBF24"/>
+          <stop offset="100%" stop-color="#F87171"/>
+        </linearGradient></defs>
+        <path d="M14 68 A52 52 0 0 1 116 68" fill="none" stroke="#1E1E26" stroke-width="7" stroke-linecap="round"/>
+        <path d="M14 68 A52 52 0 0 1 116 68" fill="none" stroke="url(#ag)" stroke-width="7" stroke-linecap="round" id="arc-path" stroke-dasharray="0 163"/>
+        <text x="65" y="52" text-anchor="middle" id="arc-score" fill="#5EEAD4" font-size="21" font-weight="700" font-family="DM Mono,monospace">–</text>
+        <text x="65" y="67" text-anchor="middle" id="arc-label" fill="#7A7A8A" font-size="8.5" letter-spacing="2">–</text>
+      </svg>
+      <div style="flex:1">
+        <div class="factor"><span class="flbl">HRV</span><div class="fval"><span class="dot" id="dot-hrv" style="background:var(--t3)"></span><span id="val-hrv">–</span></div></div>
+        <div class="factor"><span class="flbl">Sueño</span><div class="fval"><span class="dot" id="dot-sleep" style="background:var(--t3)"></span><span id="val-sleep">–</span></div></div>
+        <div class="factor"><span class="flbl">FC</span><div class="fval"><span class="dot" id="dot-hr" style="background:var(--t3)"></span><span id="val-hr">–</span></div></div>
+        <div class="factor"><span class="flbl">Estrés</span><div class="fval"><span class="dot" id="dot-stress" style="background:var(--t3)"></span><span id="val-stress">–</span></div></div>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- Vitals -->
+  <div class="card"><div class="cp">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+      <span class="slabel" style="margin:0">Signos vitales</span>
+      <span style="font-size:.6rem;color:var(--t3)" id="last-sync-lbl">–</span>
+    </div>
+    <div class="vgrid">
+      <div class="vital"><div class="vlbl">❤️ FC</div><div><span class="vval" id="v-hr">–</span><span class="vunit">bpm</span></div></div>
+      <div class="vital"><div class="vlbl">⚡ HRV</div><div><span class="vval" id="v-hrv">–</span><span class="vunit">ms</span></div></div>
+      <div class="vital"><div class="vlbl">🌙 Sueño</div><div><span class="vval" id="v-sleep">–</span><span class="vunit">h</span></div></div>
+      <div class="vital"><div class="vlbl">👟 Pasos</div><div><span class="vval" id="v-steps">–</span></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:.375rem">
+        <span style="font-size:.6rem;color:var(--t3)">FC — últimas lecturas</span>
+      </div>
+      <div class="hr-bars" id="hr-bars"></div>
+    </div>
+  </div></div>
+
+  <button class="log-btn" onclick="openModal()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+    Registrar evento
+  </button>
+
+  <div class="card"><div class="cp">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+      <span class="slabel" style="margin:0">Eventos recientes</span>
+      <button class="more-link" onclick="go('hist')">ver todos →</button>
+    </div>
+    <div id="ev-list"><div class="loading"><div class="spin"></div>Cargando...</div></div>
+  </div></div>
+</section>
+
+<!-- HISTORY -->
+<section class="screen" id="s-hist">
+  <div class="ph"><p class="ph-eye">Historial clínico</p><h1 class="ph-title">Últimos <em>14 días</em></h1></div>
+
+  <div class="card"><div class="cp">
+    <span class="slabel">Riesgo diario</span>
+    <div class="hmap" id="hmap"></div>
+    <div style="display:flex;gap:.875rem;justify-content:flex-end;margin-top:.75rem">
+      <div style="display:flex;align-items:center;gap:.375rem"><span class="dot" style="background:var(--low)"></span><span style="font-size:.58rem;color:var(--t3)">BAJO</span></div>
+      <div style="display:flex;align-items:center;gap:.375rem"><span class="dot" style="background:var(--mid)"></span><span style="font-size:.58rem;color:var(--t3)">MODERADO</span></div>
+      <div style="display:flex;align-items:center;gap:.375rem"><span class="dot" style="background:var(--hgh)"></span><span style="font-size:.58rem;color:var(--t3)">ALTO</span></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="cp">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+      <span class="slabel" style="margin:0">FC — historial</span>
+    </div>
+    <svg id="sparkline" viewBox="0 0 300 50" preserveAspectRatio="none" style="width:100%;height:50px;display:block"></svg>
+  </div></div>
+
+  <div class="card"><div class="cp">
+    <span class="slabel">Todos los eventos</span>
+    <div id="all-evs"><div class="loading"><div class="spin"></div>Cargando...</div></div>
+  </div></div>
+</section>
+
+<!-- INSIGHTS -->
+<section class="screen" id="s-ins">
+  <div class="ph"><p class="ph-eye">Análisis inteligente</p><h1 class="ph-title">Insights de la <em>semana</em></h1></div>
+  <div class="card"><div class="cp" style="display:flex;align-items:center;gap:1rem">
+    <svg width="130" height="76" viewBox="0 0 130 76" style="flex-shrink:0">
+      <path d="M14 68 A52 52 0 0 1 116 68" fill="none" stroke="#1E1E26" stroke-width="7" stroke-linecap="round"/>
+      <path d="M14 68 A52 52 0 0 1 116 68" fill="none" stroke="url(#ag)" stroke-width="7" stroke-linecap="round" id="ins-arc" stroke-dasharray="0 163"/>
+      <text x="65" y="52" text-anchor="middle" id="ins-score" fill="#5EEAD4" font-size="21" font-weight="700" font-family="DM Mono,monospace">–</text>
+      <text x="65" y="67" text-anchor="middle" fill="#7A7A8A" font-size="8.5" letter-spacing="2">RIESGO</text>
+    </svg>
+    <div>
+      <p style="font-size:.875rem;font-weight:500;color:var(--t1);margin-bottom:.375rem">Riesgo semanal promedio</p>
+      <p style="font-size:.75rem;color:var(--t2);line-height:1.6">Basado en FC, HRV, sueño, medicación y eventos registrados.</p>
+    </div>
+  </div></div>
+  <div id="ins-list" style="display:flex;flex-direction:column;gap:.75rem"></div>
+</section>
+
+<!-- PROFILE -->
+<section class="screen" id="s-prof">
+  <div class="ph"><p class="ph-eye">Cuenta</p><h1 class="ph-title">Mi <em>perfil</em></h1></div>
+
+  <div class="card"><div class="cp" style="display:flex;align-items:center;gap:1rem">
+    <div style="width:58px;height:58px;border-radius:1.125rem;background:var(--acc3);display:flex;align-items:center;justify-content:center;font-size:1.875rem;flex-shrink:0">🧠</div>
+    <div>
+      <p style="font-size:1rem;font-weight:500;color:var(--t1)" id="prof-name">–</p>
+      <p style="font-size:.75rem;color:var(--t2);margin-top:.125rem">Paciente · Epilepsia</p>
+      <p style="font-size:.7rem;color:var(--t3);margin-top:.125rem" id="prof-email">–</p>
+    </div>
+  </div></div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-val" id="st-events">–</div><div class="stat-lbl">Eventos totales</div></div>
+    <div class="stat-card"><div class="stat-val" id="st-vitals">–</div><div class="stat-lbl">Lecturas vitales</div></div>
+    <div class="stat-card"><div class="stat-val" id="st-risk">–</div><div class="stat-lbl">Riesgo actual</div></div>
+    <div class="stat-card"><div class="stat-val" id="st-days">–</div><div class="stat-lbl">Días registrando</div></div>
+  </div>
+
+  <div class="card"><div class="cp">
+    <span class="slabel">Conexiones</span>
+    <div class="conn-row"><div class="conn-ico">⌚</div><div style="flex:1"><div class="conn-name">Apple Watch</div><div class="conn-sub">Datos vía Apple Health</div></div><span class="dot" style="background:var(--mid)"></span></div>
+    <div class="conn-row"><div class="conn-ico">🗄️</div><div style="flex:1"><div class="conn-name">Supabase</div><div class="conn-sub">Base de datos conectada</div></div><span class="dot" style="background:var(--low)" id="db-dot"></span></div>
+    <div class="conn-row" style="border-bottom:none"><div class="conn-ico">🔒</div><div style="flex:1"><div class="conn-name">RLS Activo</div><div class="conn-sub">Datos protegidos</div></div><span class="dot" style="background:var(--low)"></span></div>
+  </div></div>
+
+  <button onclick="doSignOut()" style="display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:1rem;border-radius:1.125rem;background:var(--s1);border:1px solid var(--b1);color:var(--t2);font-size:.875rem;font-family:'Syne',sans-serif">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    Cerrar sesión
+  </button>
+</section>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="nb on" id="nb-dash" onclick="go('dash')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Monitor</span>
+  </button>
+  <button class="nb" id="nb-hist" onclick="go('hist')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18 9l-5 5-4-4-3 3"/></svg>
+    <span>Historial</span>
+  </button>
+  <button class="nb" id="nb-ins" onclick="go('ins')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+    <span>Análisis</span>
+  </button>
+  <button class="nb" id="nb-prof" onclick="go('prof')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Perfil</span>
+  </button>
+</nav>
+
+</div><!-- /app-shell -->
+
+<!-- MODAL -->
+<div class="overlay" id="modal" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-ttl">Registrar evento</span>
+      <button class="close-btn" onclick="closeModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="etype-grid" id="etype-grid"></div>
+    <div class="slider-wrap" id="sw">
+      <div class="slider-hdr"><span class="slider-lbl">Intensidad</span><span class="slider-num" id="snum">5/10</span></div>
+      <input type="range" min="1" max="10" value="5" id="slider" oninput="document.getElementById('snum').textContent=this.value+'/10'"/>
+    </div>
+    <div class="note-wrap" id="nw">
+      <textarea class="note-input" id="note" rows="2" placeholder="Nota opcional..."></textarea>
+    </div>
+    <button class="save-btn idle" id="sbtn" onclick="saveEv()">Registrar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+</div><!-- /root -->
+
+<script>
+// ── Supabase ─────────────────────────────────────────────────────────────────
+const { createClient } = supabase;
+const sb = createClient(
+  'https://wsiaflvanlmqancysopl.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzaWFmbHZhbmxtcWFuY3lzb3BsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzQyNzEsImV4cCI6MjA5NDQ1MDI3MX0.xAmlmRMTsLyRbBTePB0M8qyw8tp5hplAWHnI1xzSyTk'
+);
+
+// ── Event types ───────────────────────────────────────────────────────────────
+const ET = {
+  aura:       {e:'👁️', l:'Aura',       c:'#A78BFA'},
+  crisis:     {e:'⚡',  l:'Crisis',     c:'#F87171'},
+  sueno:      {e:'🌙',  l:'Sueño',      c:'#60A5FA'},
+  medicacion: {e:'💊',  l:'Medicación', c:'#5EEAD4'},
+  estres:     {e:'🧠',  l:'Estrés',     c:'#FBBF24'},
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let currentUser = null;
+let lastVitals   = null;
+let allEvents    = [];
+let allVitals    = [];
+let selType      = null;
+let isRegister   = false;
+
+// ── Auth mode toggle ──────────────────────────────────────────────────────────
+function toggleMode() {
+  isRegister = !isRegister;
+  document.getElementById('mode-lbl').textContent = isRegister ? 'Modo: crear cuenta' : 'Modo: iniciar sesión';
+  document.querySelector('.login-toggle b').textContent = isRegister ? 'Iniciar sesión' : 'Registrarse';
+  document.querySelector('.login-btn').textContent = isRegister ? 'Crear cuenta' : 'Ingresar';
+}
+
+async function doAuth() {
+  const email = document.getElementById('li-email').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  const err   = document.getElementById('login-err');
+  err.style.display = 'none';
+
+  if (!email || !pass) { showErr('Completá email y contraseña'); return; }
+
+  let res;
+  if (isRegister) {
+    res = await sb.auth.signUp({ email, password: pass });
+  } else {
+    res = await sb.auth.signInWithPassword({ email, password: pass });
+  }
+
+  if (res.error) { showErr(res.error.message); return; }
+
+  if (isRegister && !res.data.session) {
+    showErr('Revisá tu email para confirmar la cuenta.'); return;
+  }
+
+  await initApp(res.data.user);
+}
+
+function showErr(msg) {
+  const el = document.getElementById('login-err');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  currentUser = null;
+}
+
+// ── Init app ──────────────────────────────────────────────────────────────────
+async function initApp(user) {
+  currentUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'block';
+
+  // Set date
+  document.getElementById('today-str').textContent =
+    new Date().toLocaleDateString('es-AR', {weekday:'long', day:'numeric', month:'long'});
+
+  // Set user info
+  const name = user.email.split('@')[0];
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('prof-name').textContent = name;
+  document.getElementById('prof-email').textContent = user.email;
+
+  await loadAll();
+  subscribeRealtime();
+}
+
+// ── Load all data ─────────────────────────────────────────────────────────────
+async function loadAll() {
+  await Promise.all([loadVitals(), loadEvents()]);
+  renderAll();
+}
+
+async function loadVitals() {
+  const { data } = await sb.from('vitals')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('recorded_at', { ascending: false })
+    .limit(50);
+  allVitals = data || [];
+  lastVitals = allVitals[0] || null;
+}
+
+async function loadEvents() {
+  const { data } = await sb.from('events')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('recorded_at', { ascending: false })
+    .limit(100);
+  allEvents = data || [];
+}
+
+// ── Realtime ──────────────────────────────────────────────────────────────────
+function subscribeRealtime() {
+  sb.channel('intrun-live')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'vitals',
+      filter: `user_id=eq.${currentUser.id}` }, async () => {
+      await loadVitals();
+      renderVitals();
+      renderRisk();
+      showToast('Nuevos vitales recibidos', 'ok');
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'events',
+      filter: `user_id=eq.${currentUser.id}` }, async () => {
+      await loadEvents();
+      renderEvList();
+      renderAllEvs();
+    })
+    .subscribe(status => {
+      const el = document.getElementById('sync-lbl');
+      if (status === 'SUBSCRIBED') {
+        el.innerHTML = '<span class="dot" style="background:var(--low)"></span>Conectado';
+      }
+    });
+}
+
+// ── Risk engine ───────────────────────────────────────────────────────────────
+function calcRisk(v) {
+  if (!v) return 0;
+  let score = 0;
+  // HRV (0-25)
+  const hrv = v.hrv || 0;
+  score += hrv >= 50 ? 0 : hrv >= 35 ? 10 : hrv >= 20 ? 18 : 25;
+  // Sleep (0-25)
+  const sl = v.sleep_hours || 0;
+  score += sl >= 7.5 ? 0 : sl >= 6 ? 8 : sl >= 5 ? 16 : 25;
+  // Stress (0-15)
+  const st = v.stress_pct || 0;
+  score += st < 40 ? 0 : st < 60 ? 5 : st < 80 ? 10 : 15;
+  // HR (0-10)
+  const hr = v.heart_rate || 70;
+  score += hr >= 50 && hr <= 100 ? 0 : hr > 100 ? 10 : 5;
+  return Math.min(100, score);
+}
+
+function riskColor(s) { return s < 30 ? 'var(--low)' : s < 65 ? 'var(--mid)' : 'var(--hgh)' }
+function riskLabel(s) { return s < 30 ? 'BAJO' : s < 65 ? 'MODERADO' : 'ALTO' }
+function dotColor(val, ok, warn) {
+  if (val === null || val === undefined) return 'var(--t3)';
+  return val >= ok ? 'var(--low)' : val >= warn ? 'var(--mid)' : 'var(--hgh)';
+}
+
+// ── Render all ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderVitals();
+  renderRisk();
+  renderEvList();
+  renderAllEvs();
+  renderHmap();
+  renderSpark();
+  renderInsights();
+  renderProfile();
+  renderHRBars();
+}
+
+// ── Vitals ────────────────────────────────────────────────────────────────────
+function renderVitals() {
+  const v = lastVitals;
+  const set = (id, val, unit='') => {
+    document.getElementById(id).textContent = val !== null && val !== undefined ? val : '–';
+  };
+  set('v-hr',    v?.heart_rate);
+  set('v-hrv',   v?.hrv);
+  set('v-sleep', v?.sleep_hours);
+  set('v-steps', v?.steps ? v.steps.toLocaleString() : '–');
+
+  document.getElementById('last-sync-lbl').textContent =
+    v ? 'última lectura: ' + fmt(v.recorded_at) : 'Sin datos aún';
+
+  // Dots
+  if (v) {
+    document.getElementById('dot-hrv').style.background   = dotColor(v.hrv, 45, 25);
+    document.getElementById('dot-sleep').style.background = dotColor(v.sleep_hours, 7, 5);
+    document.getElementById('dot-hr').style.background    = v.heart_rate >= 50 && v.heart_rate <= 100 ? 'var(--low)' : 'var(--mid)';
+    document.getElementById('dot-stress').style.background= dotColor(100 - (v.stress_pct||0), 60, 40);
+    document.getElementById('val-hrv').textContent   = v.hrv ? v.hrv + ' ms' : '–';
+    document.getElementById('val-sleep').textContent = v.sleep_hours ? v.sleep_hours + ' h' : '–';
+    document.getElementById('val-hr').textContent    = v.heart_rate ? v.heart_rate + ' bpm' : '–';
+    document.getElementById('val-stress').textContent= v.stress_pct ? v.stress_pct + ' %' : '–';
+  }
+}
+
+// ── Risk ──────────────────────────────────────────────────────────────────────
+function renderRisk() {
+  const score = calcRisk(lastVitals);
+  const color = riskColor(score);
+  const label = riskLabel(score);
+  const filled = (score / 100) * 163;
+
+  document.getElementById('arc-path').setAttribute('stroke-dasharray', `${filled} 163`);
+  document.getElementById('arc-score').textContent = lastVitals ? score : '–';
+  document.getElementById('arc-score').setAttribute('fill', color);
+  document.getElementById('arc-label').textContent = lastVitals ? label : '–';
+  document.getElementById('risk-badge').textContent = lastVitals ? label : '–';
+  document.getElementById('risk-badge').style.color = color;
+  document.getElementById('risk-badge').style.background = color + '18';
+
+  // Insights arc
+  document.getElementById('ins-arc').setAttribute('stroke-dasharray', `${filled} 163`);
+  document.getElementById('ins-score').textContent = lastVitals ? score : '–';
+  document.getElementById('ins-score').setAttribute('fill', color);
+
+  // Alert banner
+  const banner = document.getElementById('alert-banner');
+  if (!lastVitals) { banner.style.display = 'none'; return; }
+
+  if (score >= 65) {
+    banner.style.display = 'flex';
+    banner.style.background = 'rgba(248,113,113,.07)';
+    banner.style.border = '1px solid rgba(248,113,113,.2)';
+    banner.style.color = 'var(--hgh)';
+    banner.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+    Riesgo elevado detectado — Considerá contactar a tu médico.`;
+  } else if (score >= 30) {
+    banner.style.display = 'flex';
+    banner.style.background = 'rgba(251,191,36,.07)';
+    banner.style.border = '1px solid rgba(251,191,36,.2)';
+    banner.style.color = 'var(--mid)';
+    banner.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+    Patrón moderado detectado — Revisá hidratación y descanso.`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// ── HR bars ───────────────────────────────────────────────────────────────────
+function renderHRBars() {
+  const recent = allVitals.slice(0, 24).reverse();
+  if (!recent.length) {
+    document.getElementById('hr-bars').innerHTML =
+      '<div style="font-size:.65rem;color:var(--t3);text-align:center;width:100%">Sin datos de FC aún</div>';
+    return;
+  }
+  const vals = recent.map(v => v.heart_rate || 70);
+  const mn = Math.min(...vals), mx = Math.max(...vals), rng = mx - mn || 1;
+  document.getElementById('hr-bars').innerHTML = vals.map((v, i) => {
+    const pct = Math.max(8, ((v - mn) / rng) * 100);
+    const isLast = i === vals.length - 1;
+    return `<div class="hr-bar" style="height:${pct}%;background:${isLast ? 'var(--acc)' : 'rgba(94,234,212,.2)'}"></div>`;
+  }).join('');
+}
+
+// ── Events list ───────────────────────────────────────────────────────────────
+function renderEvList() {
+  const el = document.getElementById('ev-list');
+  if (!allEvents.length) {
+    el.innerHTML = '<div class="empty">No hay eventos registrados.<br>Tocá el botón de abajo para agregar uno.</div>';
+    return;
+  }
+  el.innerHTML = allEvents.slice(0, 4).map(ev => {
+    const c = ET[ev.type] || {e:'📋', l: ev.type, c:'#7A7A8A'};
+    return `<div class="ev-item">
+      <div class="ev-ico" style="background:${c.c}18">${c.e}</div>
+      <div style="flex:1;min-width:0">
+        <div class="ev-name">${c.l}</div>
+        <div class="ev-note">${ev.notes || 'Intensidad ' + (ev.severity||'–') + '/10'}</div>
+      </div>
+      <div class="ev-time">${fmt(ev.recorded_at)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAllEvs() {
+  const el = document.getElementById('all-evs');
+  if (!allEvents.length) {
+    el.innerHTML = '<div class="empty">Sin eventos registrados aún.</div>';
+    return;
+  }
+  el.innerHTML = allEvents.map(ev => {
+    const c = ET[ev.type] || {e:'📋', l: ev.type, c:'#7A7A8A'};
+    return `<div class="ev-row">
+      <div class="ev-ico" style="background:${c.c}18">${c.e}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.875rem;color:var(--t1);font-weight:500">${c.l}</div>
+        <div style="font-size:.72rem;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ev.notes || 'Intensidad ' + (ev.severity||'–') + '/10'}</div>
+      </div>
+      <div class="ev-row-meta">
+        <div class="ev-row-t">${fmt(ev.recorded_at)}</div>
+        <div class="ev-row-d">${fmtD(ev.recorded_at)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Heatmap ───────────────────────────────────────────────────────────────────
+function renderHmap() {
+  const days = Array.from({length:14}, (_, i) => {
+    const d = new Date(Date.now() - i * 86400000);
+    const dayStr = d.toISOString().split('T')[0];
+    const dayVital = allVitals.find(v => v.recorded_at?.startsWith(dayStr));
+    const score = dayVital ? calcRisk(dayVital) : null;
+    return { d, score };
+  }).reverse();
+
+  document.getElementById('hmap').innerHTML = days.map(({ d, score }) => {
+    const [col, bg] = score === null
+      ? ['var(--t3)', 'var(--s2)']
+      : score < 30
+      ? ['var(--low)', 'rgba(94,234,212,.14)']
+      : score < 65
+      ? ['var(--mid)', 'rgba(251,191,36,.14)']
+      : ['var(--hgh)', 'rgba(248,113,113,.14)'];
+    return `<div>
+      <div class="hmap-cell" style="background:${bg};color:${col}">${score !== null ? score : '·'}</div>
+      <div class="hmap-day">${d.getDate()}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Sparkline ─────────────────────────────────────────────────────────────────
+function renderSpark() {
+  const data = allVitals.slice(0, 20).reverse().map(v => v.heart_rate || 70);
+  if (data.length < 2) {
+    document.getElementById('sparkline').innerHTML =
+      '<text x="150" y="30" text-anchor="middle" fill="#3A3A48" font-size="11" font-family="Syne">Sin suficientes datos aún</text>';
+    return;
+  }
+  const W = 300, H = 50;
+  const mn = Math.min(...data), mx = Math.max(...data), rng = mx - mn || 1;
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * W},${H - ((v - mn) / rng) * H}`).join(' ');
+  document.getElementById('sparkline').innerHTML = `
+    <defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5EEAD4" stop-opacity=".28"/>
+      <stop offset="100%" stop-color="#5EEAD4" stop-opacity="0"/>
+    </linearGradient></defs>
+    <polyline points="${pts}" fill="none" stroke="var(--acc)" stroke-width="1.5"/>
+    <polygon points="0,${H} ${pts} ${W},${H}" fill="url(#sg2)"/>`;
+}
+
+// ── Insights ──────────────────────────────────────────────────────────────────
+function renderInsights() {
+  const v = lastVitals;
+  const ins = [];
+
+  if (!v) {
+    ins.push({ e:'📡', t:'Sin datos aún', c:'var(--t2)', badge:'INFO', bc:'var(--t2)',
+      d:'Cargá tus primeros signos vitales para ver análisis personalizados.', a:null });
+  } else {
+    const sleep = v.sleep_hours || 0;
+    if (sleep < 6) ins.push({ e:'🌙', t:'Sueño insuficiente', c:'#60A5FA', badge:'ATENCIÓN', bc:'var(--hgh)',
+      d:`Dormiste ${sleep}h. La privación de sueño es factor de riesgo documentado.`, a:'Establecer rutina de sueño' });
+    else ins.push({ e:'🌙', t:'Sueño adecuado', c:'#60A5FA', badge:'OK', bc:'var(--low)',
+      d:`Dormiste ${sleep}h esta noche. Buen descanso.`, a:null });
+
+    const hrv = v.hrv || 0;
+    if (hrv >= 45) ins.push({ e:'⚡', t:'HRV estable', c:'var(--acc)', badge:'OK', bc:'var(--low)',
+      d:`HRV ${hrv}ms — dentro de parámetros normales. Buena recuperación del sistema nervioso.`, a:null });
+    else ins.push({ e:'⚡', t:'HRV reducida', c:'var(--acc)', badge:'INFO', bc:'var(--mid)',
+      d:`HRV ${hrv}ms — por debajo del rango óptimo. Considerá descanso adicional.`, a:null });
+
+    const st = v.stress_pct || 0;
+    if (st > 60) ins.push({ e:'🧠', t:'Estrés elevado', c:'#A78BFA', badge:'INFO', bc:'var(--mid)',
+      d:`Nivel de estrés ${st}%. El estrés puede modular el umbral de excitabilidad neuronal.`, a:'Ver técnicas de manejo' });
+  }
+
+  document.getElementById('ins-list').innerHTML = ins.map(i => `
+    <div class="insight"><div class="ins-body">
+      <div class="ins-ico" style="background:${i.c}14">${i.e}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.375rem;flex-wrap:wrap">
+          <span class="ins-ttl">${i.t}</span>
+          <span class="badge" style="background:${i.bc}18;color:${i.bc}">${i.badge}</span>
+        </div>
+        <p class="ins-desc">${i.d}</p>
+        ${i.a ? `<button class="ins-act" style="background:${i.c}14;color:${i.c}">${i.a} →</button>` : ''}
+      </div>
+    </div></div>`).join('');
+}
+
+// ── Profile stats ─────────────────────────────────────────────────────────────
+function renderProfile() {
+  document.getElementById('st-events').textContent = allEvents.length || '0';
+  document.getElementById('st-vitals').textContent = allVitals.length || '0';
+  const score = calcRisk(lastVitals);
+  document.getElementById('st-risk').textContent = lastVitals ? score : '–';
+  document.getElementById('st-risk').style.color = lastVitals ? riskColor(score) : 'var(--acc)';
+
+  // Days since first record
+  const all = [...allEvents, ...allVitals];
+  if (all.length) {
+    const first = new Date(Math.min(...all.map(r => new Date(r.recorded_at || r.created_at))));
+    const days = Math.max(1, Math.round((Date.now() - first) / 86400000));
+    document.getElementById('st-days').textContent = days;
+  } else {
+    document.getElementById('st-days').textContent = '1';
+  }
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function renderEtypes() {
+  document.getElementById('etype-grid').innerHTML = Object.entries(ET).map(([k, c]) => `
+    <button class="etype-btn${selType === k ? ' on' : ''}" onclick="selEtype('${k}')"
+      style="${selType === k ? `border-color:${c.c};background:${c.c}12` : ''}">
+      <span class="etype-ico">${c.e}</span>
+      <span class="etype-lbl" style="${selType === k ? `color:${c.c}` : ''}">${c.l}</span>
+    </button>`).join('');
+}
+
+function selEtype(k) {
+  selType = k;
+  document.getElementById('sw').style.display = 'block';
+  document.getElementById('nw').style.display = 'block';
+  document.getElementById('sbtn').className = 'save-btn ready';
+  renderEtypes();
+}
+
+function openModal() {
+  selType = null;
+  document.getElementById('sw').style.display = 'none';
+  document.getElementById('nw').style.display = 'none';
+  document.getElementById('sbtn').className = 'save-btn idle';
+  document.getElementById('slider').value = 5;
+  document.getElementById('snum').textContent = '5/10';
+  document.getElementById('note').value = '';
+  document.getElementById('modal').classList.add('on');
+  renderEtypes();
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('on') }
+function overlayClick(e) { if (e.target === document.getElementById('modal')) closeModal() }
+
+async function saveEv() {
+  if (!selType) return;
+  const notes    = document.getElementById('note').value.trim();
+  const severity = parseInt(document.getElementById('slider').value);
+
+  const { error } = await sb.from('events').insert({
+    user_id:     currentUser.id,
+    type:        selType,
+    severity,
+    notes:       notes || null,
+    recorded_at: new Date().toISOString(),
+  });
+
+  if (error) { showToast('Error al guardar', 'err'); return; }
+  closeModal();
+  await loadEvents();
+  renderEvList();
+  renderAllEvs();
+  renderProfile();
+  showToast('Evento registrado ✓', 'ok');
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+const SCREENS = ['dash', 'hist', 'ins', 'prof'];
+function go(name) {
+  SCREENS.forEach(s => {
+    document.getElementById('s-' + s).classList.toggle('on', s === name);
+    document.getElementById('nb-' + s).classList.toggle('on', s === name);
+  });
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} on`;
+  setTimeout(() => el.classList.remove('on'), 2500);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fmt  = ts => new Date(ts).toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+const fmtD = ts => new Date(ts).toLocaleDateString('es-AR', {day:'2-digit', month:'short'});
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    await initApp(session.user);
+  }
+  // Listen for auth changes
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) await initApp(session.user);
+  });
+})();
+</script>
+</body>
+</html>
