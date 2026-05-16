@@ -444,6 +444,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </button>
     </div>
     <div class="etype-grid" id="etype-grid"></div>
+    <!-- Síntomas de aura (solo visible cuando se selecciona Aura) -->
+    <div id="aura-wrap" style="display:none;margin-bottom:1rem">
+      <p style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--hgh);margin-bottom:.625rem">⚠️ Seleccioná los síntomas presentes</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem" id="symptom-grid"></div>
+    </div>
     <div class="slider-wrap" id="sw">
       <div class="slider-hdr"><span class="slider-lbl">Intensidad</span><span class="slider-num" id="snum">5/10</span></div>
       <input type="range" min="1" max="10" value="5" id="slider" oninput="document.getElementById('snum').textContent=this.value+'/10'"/>
@@ -462,20 +467,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <p id="alert-title" style="font-size:1.05rem;font-weight:600;color:var(--hgh);margin-bottom:.5rem">Riesgo elevado detectado</p>
     <p id="alert-body" style="font-size:.78rem;color:var(--t2);line-height:1.65;margin-bottom:1rem"></p>
     <div id="alert-factors" style="margin-bottom:1rem;text-align:left;background:var(--s2);border-radius:.875rem;padding:.75rem;display:none"></div>
-    <div style="display:flex;flex-direction:column;gap:.625rem">
-      <button onclick="alertAction('med')"
-        style="width:100%;padding:.875rem;border-radius:1rem;background:var(--hgh);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-family:'Syne',sans-serif">
-        💊 Tomar medicación
-      </button>
-      <button onclick="alertAction('rest')"
-        style="width:100%;padding:.875rem;border-radius:1rem;background:rgba(94,234,212,.1);border:1px solid rgba(94,234,212,.2);color:var(--acc);font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-family:'Syne',sans-serif">
-        🛋️ Descansar ahora
-      </button>
-      <button onclick="closeAlert()"
-        style="font-size:.75rem;color:var(--t3);padding:.5rem;font-family:'Syne',sans-serif;text-decoration:underline">
-        Entendido, seguir monitoreando
-      </button>
-    </div>
+    <div id="alert-actions" style="display:flex;flex-direction:column;gap:.625rem"></div>
   </div>
 </div>
 
@@ -507,6 +499,20 @@ const ET = {
   medicacion: {e:'💊',  l:'Medicación', c:'#5EEAD4'},
   estres:     {e:'🧠',  l:'Estrés',     c:'#FBBF24'},
 };
+
+// ── Síntomas de aura ──────────────────────────────────────────────────────────
+const AURA_SYMPTOMS = [
+  {k:'mareos',    l:'Mareos/Vértigo'},
+  {k:'visual',    l:'Cambios visuales'},
+  {k:'hormigueo', l:'Hormigueo'},
+  {k:'olfato',    l:'Olores extraños'},
+  {k:'deja_vu',   l:'Déjà vu'},
+  {k:'miedo',     l:'Miedo/Ansiedad'},
+  {k:'nauseas',   l:'Náuseas'},
+  {k:'confusion', l:'Confusión repentina'},
+  {k:'espasmos',  l:'Espasmos'},
+  {k:'ausencia',  l:'Mirada perdida'},
+];
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let currentUser  = null;
@@ -744,6 +750,7 @@ function calcPersonalRisk(v) {
   if (bl.pre_crisis_hrv && bl.crisis_count >= 1) {
     score += (getPatternMatchFromVital(v) / 100) * 20;
   }
+  score += Math.min(25, getTriggerBoost() * 0.35);
   return Math.min(100, Math.round(score));
 }
 
@@ -772,44 +779,111 @@ function dotColor(val, ok, warn) {
   return val >= ok ? 'var(--low)' : val >= warn ? 'var(--mid)' : 'var(--hgh)';
 }
 
+// ── Factores desencadenantes ──────────────────────────────────────────────────
+function getTriggers() {
+  const triggers = [];
+  const v = lastVitals;
+  const today = new Date().toDateString();
+
+  // Medicación: si no se registró hoy
+  const medHoy = allEvents.find(e => e.type === 'medicacion' && new Date(e.recorded_at).toDateString() === today);
+  if (!medHoy) triggers.push({ label: '💊 Sin medicación registrada hoy', weight: 15, key: 'no_med' });
+
+  // Sueño insuficiente
+  if (v?.sleep_hours != null && v.sleep_hours < 6) triggers.push({ label: `🌙 Sueño insuficiente (${v.sleep_hours}h)`, weight: 12, key: 'sleep' });
+
+  // Fiebre
+  if (v?.body_temp != null && v.body_temp > 37.5) triggers.push({ label: `🌡️ Fiebre activa (${v.body_temp}°C)`, weight: 18, key: 'fever' });
+
+  // Estrés elevado
+  if (v?.stress_pct != null && v.stress_pct > 70) triggers.push({ label: `🧠 Estrés muy elevado (${v.stress_pct}%)`, weight: 10, key: 'stress' });
+
+  // SpO2 baja
+  if (v?.spo2 != null && v.spo2 < 95) triggers.push({ label: `🩸 SpO2 baja (${v.spo2}%)`, weight: 15, key: 'spo2' });
+
+  // Aura reciente (últimas 2 horas)
+  const auraReciente = allEvents.find(e => e.type === 'aura' && Date.now() - new Date(e.recorded_at).getTime() < 7200000);
+  if (auraReciente) triggers.push({ label: '👁️ Aura reportada recientemente', weight: 40, key: 'aura' });
+
+  return triggers;
+}
+
+function getTriggerBoost() {
+  return getTriggers().reduce((sum, t) => sum + t.weight, 0);
+}
+
 // ── Alerta automática ─────────────────────────────────────────────────────────
 function checkAndAlert() {
   const v = lastVitals;
   if (!v) return;
+
+  // Aura reciente → CRISIS INMINENTE sin esperar análisis de vitales
+  const auraReciente = allEvents.find(e => e.type === 'aura' && Date.now() - new Date(e.recorded_at).getTime() < 7200000);
+  if (auraReciente) {
+    const bl = userBaseline;
+    if (bl?.last_alert_at && Date.now() - new Date(bl.last_alert_at).getTime() < 1800000) return;
+    if (bl) { bl.last_alert_at = new Date().toISOString(); saveBaseline(); }
+    if (navigator.vibrate) navigator.vibrate([400, 100, 400, 100, 800]);
+    showAlertModal(calcPersonalRisk(v), getPatternMatch(), 'crisis');
+    sendPushAlert(calcPersonalRisk(v), getPatternMatch(), 'crisis');
+    return;
+  }
+
   const score = calcPersonalRisk(v);
   const match = getPatternMatch();
   const hasCrisisData = userBaseline && userBaseline.crisis_count >= 1;
-  const shouldAlert = score >= 65 && (hasCrisisData ? match >= 50 : score >= 80);
-  if (!shouldAlert) return;
+
+  let tier = null;
+  if (score >= 80) tier = 'crisis';
+  else if (score >= 60) tier = 'alerta';
+  else if (score >= 35 && (hasCrisisData ? match >= 40 : score >= 50)) tier = 'advertencia';
+  if (!tier) return;
 
   const bl = userBaseline;
-  if (bl && bl.last_alert_at) {
-    if (Date.now() - new Date(bl.last_alert_at).getTime() < ALERT_COOLDOWN) return;
-  }
+  const cooldown = tier === 'advertencia' ? ALERT_COOLDOWN * 2 : ALERT_COOLDOWN;
+  if (bl?.last_alert_at && Date.now() - new Date(bl.last_alert_at).getTime() < cooldown) return;
   if (bl) { bl.last_alert_at = new Date().toISOString(); saveBaseline(); }
-  if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
-  showAlertModal(score, match);
-  sendPushAlert(score, match);
+  if (navigator.vibrate) {
+    navigator.vibrate(tier === 'crisis' ? [400, 100, 400, 100, 800] : [200, 100, 200]);
+  }
+  showAlertModal(score, match, tier);
+  if (tier !== 'advertencia') sendPushAlert(score, match, tier);
 }
 
-function showAlertModal(score, match) {
-  const isCritical = score >= 80;
-  document.getElementById('alert-icon').textContent = isCritical ? '🚨' : '⚠️';
-  document.getElementById('alert-title').textContent = isCritical
-    ? 'Riesgo crítico detectado'
-    : 'Patrón pre-crisis detectado';
+function showAlertModal(score, match, tier = 'alerta') {
+  const icons   = { crisis:'🚨', alerta:'⚠️', advertencia:'💛' };
+  const titles  = { crisis:'Crisis inminente', alerta:'Alerta — patrón pre-crisis', advertencia:'Advertencia temprana' };
+  const colors  = { crisis:'var(--hgh)', alerta:'var(--mid)', advertencia:'var(--mid)' };
 
-  document.getElementById('alert-body').textContent = match > 0
-    ? `Tu perfil actual coincide en un ${match}% con el patrón registrado antes de tus crisis anteriores. Riesgo: ${score}/100.`
-    : `Tus signos vitales presentan una desviación significativa de tu línea base personal (riesgo: ${score}/100).`;
+  document.getElementById('alert-icon').textContent  = icons[tier];
+  document.getElementById('alert-title').textContent = titles[tier];
+  document.getElementById('alert-title').style.color = colors[tier];
+
+  let body = '';
+  if (tier === 'crisis') {
+    body = match > 0
+      ? `Tu perfil coincide en un ${match}% con el patrón previo a tus crisis. Riesgo: ${score}/100. Tomá tu medicación preventiva ahora.`
+      : `Múltiples factores de riesgo activos (${score}/100). Tomá tu medicación preventiva de inmediato.`;
+  } else if (tier === 'alerta') {
+    body = match > 0
+      ? `Coincidencia del ${match}% con patrón pre-crisis. Riesgo: ${score}/100. Mantenete alerta y descansá.`
+      : `Tus vitales se desvían significativamente de tu línea base personal (riesgo: ${score}/100).`;
+  } else {
+    body = `Riesgo ${score}/100. Algunos factores de riesgo activos. Considerá descansar y revisar tu medicación.`;
+  }
+  document.getElementById('alert-body').textContent = body;
 
   const v = lastVitals, bl = userBaseline;
   const factors = [];
   if (v && bl && bl.samples >= MIN_SAMPLES) {
-    if (v.hrv   && v.hrv   < bl.avg_hrv   * 0.85) factors.push(`⚡ HRV ${v.hrv}ms (tu normal: ~${Math.round(bl.avg_hrv)}ms)`);
+    if (v.hrv        && v.hrv        < bl.avg_hrv   * 0.85) factors.push(`⚡ HRV ${v.hrv}ms (tu normal: ~${Math.round(bl.avg_hrv)}ms)`);
     if (v.sleep_hours && v.sleep_hours < bl.avg_sleep * 0.85) factors.push(`🌙 Sueño ${v.sleep_hours}h (tu normal: ~${bl.avg_sleep.toFixed(1)}h)`);
-    if (v.stress_pct && v.stress_pct > bl.avg_stress * 1.2) factors.push(`🧠 Estrés ${v.stress_pct}% (tu normal: ~${Math.round(bl.avg_stress)}%)`);
+    if (v.stress_pct && v.stress_pct > bl.avg_stress * 1.2)  factors.push(`🧠 Estrés ${v.stress_pct}% (tu normal: ~${Math.round(bl.avg_stress)}%)`);
+    if (v.spo2       && v.spo2 < 95) factors.push(`🩸 SpO2 baja: ${v.spo2}%`);
+    if (v.body_temp  && v.body_temp > 37.5) factors.push(`🌡️ Fiebre: ${v.body_temp}°C`);
   }
+  getTriggers().forEach(t => { if (!factors.some(f => f.includes(t.label.substring(3,15)))) factors.push(t.label); });
+
   const factorsEl = document.getElementById('alert-factors');
   if (factors.length) {
     factorsEl.innerHTML = factors.map(f => `<div style="font-size:.72rem;color:var(--hgh);padding:.2rem 0">${f}</div>`).join('');
@@ -817,6 +891,83 @@ function showAlertModal(score, match) {
   } else {
     factorsEl.style.display = 'none';
   }
+
+  const actEl = document.getElementById('alert-actions');
+  if (tier === 'crisis') {
+    actEl.innerHTML = `
+      <button onclick="alertAction('med')" style="padding:.875rem;border-radius:.875rem;background:var(--hgh);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-family:'Syne',sans-serif;border:none;cursor:pointer">💊 Tomar medicación ahora</button>
+      <button onclick="alertAction('emergency')" style="padding:.875rem;border-radius:.875rem;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:var(--hgh);font-size:.72rem;font-weight:500;font-family:'Syne',sans-serif;cursor:pointer">🚑 Llamar emergencias (112)</button>
+      <button onclick="closeAlert()" style="padding:.5rem;font-size:.65rem;color:var(--t3);font-family:'Syne',sans-serif;background:none;border:none;cursor:pointer">Entendido</button>`;
+  } else if (tier === 'alerta') {
+    actEl.innerHTML = `
+      <button onclick="alertAction('med')" style="padding:.875rem;border-radius:.875rem;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:var(--mid);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-family:'Syne',sans-serif;cursor:pointer">💊 Registrar medicación</button>
+      <button onclick="alertAction('rest')" style="padding:.75rem;border-radius:.875rem;background:var(--s2);color:var(--t2);font-size:.72rem;font-family:'Syne',sans-serif;border:none;cursor:pointer">🛋️ Entendido, voy a descansar</button>
+      <button onclick="closeAlert()" style="padding:.5rem;font-size:.65rem;color:var(--t3);font-family:'Syne',sans-serif;background:none;border:none;cursor:pointer">Ignorar</button>`;
+  } else {
+    actEl.innerHTML = `
+      <button onclick="alertAction('med')" style="padding:.75rem;border-radius:.875rem;background:var(--s2);border:1px solid var(--b2);color:var(--t1);font-size:.72rem;font-family:'Syne',sans-serif;cursor:pointer">💊 Registrar medicación</button>
+      <button onclick="closeAlert()" style="padding:.5rem;font-size:.65rem;color:var(--t3);font-family:'Syne',sans-serif;background:none;border:none;cursor:pointer">Entendido</button>`;
+  }
+  document.getElementById('alert-overlay').classList.add('on');
+}
+
+function showAuraAlert(symptoms) {
+  const score = calcPersonalRisk(lastVitals);
+  const sympLabels = symptoms.map(k => AURA_SYMPTOMS.find(s => s.k === k)?.l || k);
+  document.getElementById('alert-icon').textContent  = '👁️';
+  document.getElementById('alert-title').textContent = 'Aura reportada — buscá seguridad';
+  document.getElementById('alert-title').style.color = 'var(--hgh)';
+
+  let body = 'Reportaste síntomas de aura. Una crisis puede presentarse en los próximos minutos.';
+  if (sympLabels.length) body += ` Síntomas: ${sympLabels.join(', ')}.`;
+  document.getElementById('alert-body').textContent = body;
+
+  const factorsEl = document.getElementById('alert-factors');
+  factorsEl.innerHTML = [
+    '⚡ Quedate en un lugar seguro y sentate o acostáte',
+    '📞 Avisá a alguien de tu entorno ahora',
+    '💊 Tomá tu medicación si tenés prescripta para crisis',
+    '🚫 No manejes ni operes maquinaria',
+  ].map(f => `<div style="font-size:.72rem;color:var(--mid);padding:.25rem 0">${f}</div>`).join('');
+  factorsEl.style.display = 'block';
+
+  document.getElementById('alert-actions').innerHTML = `
+    <button onclick="alertAction('med')" style="padding:.875rem;border-radius:.875rem;background:var(--hgh);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-family:'Syne',sans-serif;border:none;cursor:pointer">💊 Tomar medicación ahora</button>
+    <button onclick="alertAction('emergency')" style="padding:.875rem;border-radius:.875rem;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:var(--hgh);font-size:.72rem;font-weight:500;font-family:'Syne',sans-serif;cursor:pointer">📞 Llamar a alguien / 112</button>
+    <button onclick="closeAlert()" style="padding:.5rem;font-size:.65rem;color:var(--t3);font-family:'Syne',sans-serif;background:none;border:none;cursor:pointer">Entendido</button>`;
+
+  document.getElementById('alert-overlay').classList.add('on');
+  if (navigator.vibrate) navigator.vibrate([400, 100, 400, 100, 800]);
+  if (userBaseline) { userBaseline.last_alert_at = new Date().toISOString(); saveBaseline(); }
+  sendPushAlert(score, getPatternMatch(), 'aura');
+}
+
+function showCrisisEmergency(severity) {
+  const isSevere = severity >= 7;
+  document.getElementById('alert-icon').textContent  = '🚨';
+  document.getElementById('alert-title').textContent = 'Crisis registrada';
+  document.getElementById('alert-title').style.color = 'var(--hgh)';
+  document.getElementById('alert-body').textContent  = isSevere
+    ? 'Crisis de alta intensidad registrada. Si duró más de 5 minutos o no cedió sola, llamá a emergencias de inmediato.'
+    : 'Crisis registrada. El modelo fue actualizado con este evento.';
+
+  const factorsEl = document.getElementById('alert-factors');
+  if (isSevere) {
+    factorsEl.innerHTML = [
+      '🚨 Si duró >5 min → llamá al 112 inmediatamente',
+      '🛏️ Posición de recuperación: de costado con la cabeza inclinada',
+      '⏱️ Cronometrá la duración del episodio',
+      '🚫 No inmovilices ni pongas nada en la boca',
+    ].map(f => `<div style="font-size:.72rem;color:var(--mid);padding:.25rem 0">${f}</div>`).join('');
+    factorsEl.style.display = 'block';
+  } else {
+    factorsEl.style.display = 'none';
+  }
+
+  document.getElementById('alert-actions').innerHTML = `
+    ${isSevere ? `<button onclick="window.location.href='tel:112'" style="padding:.875rem;border-radius:.875rem;background:var(--hgh);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-family:'Syne',sans-serif;border:none;cursor:pointer">🚑 Llamar al 112</button>` : ''}
+    <button onclick="closeAlert()" style="padding:.875rem;border-radius:.875rem;background:var(--s2);color:var(--t1);font-size:.72rem;font-family:'Syne',sans-serif;border:1px solid var(--b2);cursor:pointer">Crisis registrada · Cerrar</button>`;
+
   document.getElementById('alert-overlay').classList.add('on');
 }
 
@@ -835,7 +986,9 @@ async function alertAction(action) {
     });
     await loadEvents(); renderEvList(); renderAllEvs(); renderProfile();
     showToast('Medicación registrada ✓', 'ok');
-  } else {
+  } else if (action === 'emergency') {
+    window.location.href = 'tel:112';
+  } else if (action === 'rest') {
     showToast('Recordatorio: descansá y tomá tu medicación', 'ok');
   }
 }
@@ -1123,6 +1276,17 @@ function renderInsights() {
       `Modelo personal activo · ${bl.samples} lecturas · ${bl.crisis_count} crisis analizadas.`;
   }
 
+  // Factores desencadenantes activos
+  const activeTriggers = getTriggers();
+  if (activeTriggers.length && v) {
+    ins.push({
+      e:'⚡', t:`${activeTriggers.length} factor${activeTriggers.length > 1 ? 'es' : ''} desencadenante${activeTriggers.length > 1 ? 's' : ''} activo${activeTriggers.length > 1 ? 's' : ''}`,
+      c:'var(--mid)', badge:'ACTIVOS', bc:'var(--mid)',
+      d: activeTriggers.map(t => t.label).join(' · '),
+      a: null,
+    });
+  }
+
   if (!v) {
     ins.push({ e:'📡', t:'Sin datos aún', c:'var(--t2)', badge:'INFO', bc:'var(--t2)',
       d:'Cargá tus primeros signos vitales para ver análisis personalizados.', a:null });
@@ -1315,21 +1479,27 @@ async function togglePush() {
   }
 }
 
-async function sendPushAlert(score, match) {
+async function sendPushAlert(score, match, tier = 'alerta') {
   if (!currentUser) return;
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) return;
+    const titles = {
+      crisis:      '🚨 Crisis inminente - Intrun',
+      aura:        '👁️ Aura reportada - Intrun',
+      alerta:      '⚠️ Alerta - Intrun',
+      advertencia: '💛 Advertencia - Intrun',
+    };
+    const bodies = {
+      crisis:      `Riesgo ${score}/100 · Tomá tu medicación ahora`,
+      aura:        'Síntomas de aura · Buscá un lugar seguro',
+      alerta:      match > 0 ? `Patrón pre-crisis ${match}% · Riesgo ${score}/100` : `Riesgo ${score}/100 · Revisá tus vitales`,
+      advertencia: `Riesgo ${score}/100 · Factores de riesgo activos`,
+    };
     await fetch(`https://wsiaflvanlmqancysopl.supabase.co/functions/v1/send-push`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-      body: JSON.stringify({
-        score, patternMatch: match,
-        title: score >= 80 ? '🚨 Alerta crítica - Intrun' : '⚠️ Riesgo elevado - Intrun',
-        body: match > 0
-          ? `Patrón pre-crisis: ${match}% de coincidencia · Riesgo: ${score}/100`
-          : `Riesgo ${score}/100 · Revisá tus signos vitales`,
-      }),
+      body: JSON.stringify({ score, patternMatch: match, title: titles[tier], body: bodies[tier] }),
     });
   } catch {}
 }
@@ -1351,11 +1521,34 @@ function renderEtypes() {
     </button>`).join('');
 }
 
+function renderAuraSymptoms() {
+  document.getElementById('symptom-grid').innerHTML = AURA_SYMPTOMS.map(s => `
+    <label id="lbl-${s.k}" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .625rem;border-radius:.75rem;background:var(--s2);border:1.5px solid var(--b2);cursor:pointer;font-size:.72rem;color:var(--t2);transition:all .15s">
+      <input type="checkbox" value="${s.k}" style="accent-color:var(--hgh);width:14px;height:14px;flex-shrink:0" onchange="onSymptomChange(this)">
+      ${s.l}
+    </label>`).join('');
+}
+
+function onSymptomChange(cb) {
+  const lbl = document.getElementById('lbl-' + cb.value);
+  if (!lbl) return;
+  lbl.style.borderColor = cb.checked ? 'rgba(248,113,113,.5)' : 'var(--b2)';
+  lbl.style.background  = cb.checked ? 'rgba(248,113,113,.08)' : 'var(--s2)';
+  lbl.style.color        = cb.checked ? 'var(--hgh)' : 'var(--t2)';
+}
+
 function selEtype(k) {
   selType = k;
   document.getElementById('sw').style.display = 'block';
   document.getElementById('nw').style.display = 'block';
   document.getElementById('sbtn').className = 'save-btn ready';
+  const auraWrap = document.getElementById('aura-wrap');
+  if (k === 'aura') {
+    auraWrap.style.display = 'block';
+    renderAuraSymptoms();
+  } else {
+    auraWrap.style.display = 'none';
+  }
   renderEtypes();
 }
 
@@ -1363,6 +1556,7 @@ function openModal() {
   selType = null;
   document.getElementById('sw').style.display = 'none';
   document.getElementById('nw').style.display = 'none';
+  document.getElementById('aura-wrap').style.display = 'none';
   document.getElementById('sbtn').className = 'save-btn idle';
   document.getElementById('slider').value = 5;
   document.getElementById('snum').textContent = '5/10';
@@ -1376,8 +1570,20 @@ function overlayClick(e) { if (e.target === document.getElementById('modal')) cl
 
 async function saveEv() {
   if (!selType) return;
-  const notes    = document.getElementById('note').value.trim();
+  let notes      = document.getElementById('note').value.trim();
   const severity = parseInt(document.getElementById('slider').value);
+
+  // Recoger síntomas de aura seleccionados
+  let auraSymptoms = [];
+  if (selType === 'aura') {
+    auraSymptoms = Array.from(document.querySelectorAll('#symptom-grid input[type=checkbox]:checked'))
+      .map(cb => cb.value);
+    if (auraSymptoms.length) {
+      const sympText = auraSymptoms.map(k => AURA_SYMPTOMS.find(s => s.k === k)?.l || k).join(', ');
+      notes = notes ? `${notes} | Síntomas: ${sympText}` : `Síntomas: ${sympText}`;
+    }
+  }
+
   const { error } = await sb.from('events').insert({
     user_id: currentUser.id, type: selType, severity,
     notes: notes || null, recorded_at: new Date().toISOString(),
@@ -1385,23 +1591,18 @@ async function saveEv() {
   if (error) { showToast('Error al guardar', 'err'); return; }
   closeModal();
   await loadEvents();
-  // Si es crisis, extraer patrón pre-crisis y actualizar modelo
-  if (selType === 'crisis' && allEvents.length > 0) {
+
+  if (selType === 'aura') {
+    showAuraAlert(auraSymptoms);
+  } else if (selType === 'crisis') {
     if (!userBaseline) await bootstrapBaseline();
-    else {
-      await _extractPreCrisis(allEvents[0]);
-      await saveBaseline();
-    }
-    renderPrediction();
-    renderInsights();
-    renderProfile();
-    showToast('Crisis registrada · Modelo actualizado ✓', 'ok');
+    else { await _extractPreCrisis(allEvents[0]); await saveBaseline(); }
+    showCrisisEmergency(severity);
+    renderPrediction(); renderInsights(); renderProfile();
   } else {
     showToast('Evento registrado ✓', 'ok');
   }
-  renderEvList();
-  renderAllEvs();
-  renderProfile();
+  renderEvList(); renderAllEvs(); renderProfile();
 }
 
 // ── Navegación ────────────────────────────────────────────────────────────────
