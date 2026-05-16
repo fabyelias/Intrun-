@@ -25,8 +25,6 @@ textarea,input,select{font-family:'Syne',sans-serif}
   --low:#5EEAD4;--mid:#FBBF24;--hgh:#F87171;
 }
 #root{max-width:430px;margin:0 auto;min-height:100dvh;background:var(--bg)}
-
-/* Topbar */
 .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
   padding:calc(env(safe-area-inset-top) + .5rem) 1.25rem .75rem;
   background:rgba(8,8,10,.92);border-bottom:1px solid var(--b1);
@@ -40,8 +38,6 @@ textarea,input,select{font-family:'Syne',sans-serif}
 @keyframes ring{0%{transform:scale(1);opacity:.4}100%{transform:scale(2.4);opacity:0}}
 .live-lbl{font-size:.62rem;color:var(--acc);letter-spacing:.06em}
 .sync-badge{display:flex;align-items:center;gap:.375rem;font-size:.62rem;color:var(--t3)}
-
-/* Bottom nav */
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:50;
   display:flex;justify-content:space-around;align-items:center;
   padding:.625rem 0 calc(.625rem + env(safe-area-inset-bottom));
@@ -50,50 +46,32 @@ textarea,input,select{font-family:'Syne',sans-serif}
 .nb{display:flex;flex-direction:column;align-items:center;gap:.3rem;color:var(--t3);padding:.375rem .875rem;transition:color .15s}
 .nb.on{color:var(--acc)}
 .nb span{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase}
-
-/* Screens */
 .screen{display:none;flex-direction:column;gap:.875rem;padding:1rem 1rem calc(5.5rem + env(safe-area-inset-bottom));animation:fadein .2s ease}
 .screen.on{display:flex}
 @keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-
-/* Page header */
 .ph{padding:.5rem 0 .25rem}
 .ph-eye{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:.375rem}
 .ph-title{font-size:1.375rem;font-weight:300;color:var(--t1);line-height:1.2}
 .ph-title em{color:var(--acc);font-style:normal;font-weight:500}
-
-/* Cards */
 .card{background:var(--s1);border:1px solid var(--b1);border-radius:1.125rem;overflow:hidden}
 .cp{padding:1.25rem}
 .slabel{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);display:block;margin-bottom:.875rem}
 .badge{display:inline-flex;align-items:center;font-size:.58rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:999px}
-
-/* Alert banner */
 .alert-banner{display:flex;align-items:flex-start;gap:.75rem;padding:.875rem 1rem;border-radius:1rem;font-size:.8rem;line-height:1.55}
-
-/* Log btn */
 .log-btn{display:flex;align-items:center;justify-content:center;gap:.625rem;width:100%;padding:1.125rem;
   border-radius:1.125rem;background:var(--acc3);border:1px solid rgba(94,234,212,.18);
   color:var(--acc);font-size:.73rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:all .15s}
 .log-btn:active{transform:scale(.98)}
-
-/* Vitals grid */
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.125rem;margin-bottom:1.125rem}
 .vital{display:flex;flex-direction:column;gap:.25rem}
 .vlbl{display:flex;align-items:center;gap:.375rem;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t2)}
 .vval{font-size:1.625rem;font-weight:300;font-family:'DM Mono',monospace;color:var(--t1);line-height:1}
 .vunit{font-size:.7rem;color:var(--t2);margin-left:.2rem}
-
-/* HR bars */
 .hr-bars{display:flex;align-items:flex-end;gap:2px;height:44px;width:100%}
 .hr-bar{flex:1;border-radius:2px 2px 0 0;min-height:2px}
-
-/* Factor rows */
 .factor{display:flex;align-items:center;justify-content:space-between;padding:.3rem 0}
 .flbl{font-size:.75rem;color:var(--t2)}
 .fval{display:flex;align-items:center;gap:.375rem;font-size:.75rem;font-family:'DM Mono',monospace;color:var(--t1)}
-
-/* Events */
 .ev-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 0}
 .ev-item+.ev-item{border-top:1px solid var(--b1)}
 .ev-ico{width:34px;height:34px;border-radius:.75rem;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
@@ -101,27 +79,19 @@ textarea,input,select{font-family:'Syne',sans-serif}
 .ev-note{font-size:.72rem;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:185px}
 .ev-time{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--t3);margin-left:auto;flex-shrink:0}
 .more-link{font-size:.65rem;color:var(--t3)}
-
-/* Heatmap */
 .hmap{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .hmap-cell{aspect-ratio:1;border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-family:'DM Mono',monospace;font-weight:500}
 .hmap-day{text-align:center;font-size:.5rem;color:var(--t3);margin-top:.25rem}
-
-/* All events */
 .ev-row{display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:.875rem;background:var(--s2);margin-bottom:.5rem}
 .ev-row-meta{text-align:right;flex-shrink:0}
 .ev-row-t{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--t3)}
 .ev-row-d{font-size:.6rem;color:var(--t3)}
-
-/* Insights */
 .insight{background:var(--s1);border:1px solid var(--b1);border-radius:1.125rem}
 .ins-body{display:flex;align-items:flex-start;gap:.875rem;padding:1.25rem}
 .ins-ico{width:38px;height:38px;border-radius:.875rem;display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0;margin-top:.125rem}
 .ins-ttl{font-size:.875rem;font-weight:500;color:var(--t1);margin-bottom:.25rem}
 .ins-desc{font-size:.75rem;color:var(--t2);line-height:1.6;margin-bottom:.75rem}
 .ins-act{font-size:.7rem;padding:.375rem .875rem;border-radius:.625rem;font-family:'Syne',sans-serif}
-
-/* Profile */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 .stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:1.125rem;padding:1rem;text-align:center}
 .stat-val{font-size:1.625rem;font-weight:300;font-family:'DM Mono',monospace;color:var(--acc);margin-bottom:.25rem}
@@ -133,8 +103,6 @@ textarea,input,select{font-family:'Syne',sans-serif}
 .conn-sub{font-size:.7rem;color:var(--t2)}
 .med-row{display:flex;align-items:center;gap:.75rem;padding:.75rem 0}
 .med-row+.med-row{border-top:1px solid var(--b1)}
-
-/* Modal */
 .overlay{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;
   padding:1rem;background:rgba(0,0,0,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .overlay.on{display:flex}
@@ -144,50 +112,36 @@ textarea,input,select{font-family:'Syne',sans-serif}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
 .modal-ttl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t2)}
 .close-btn{width:28px;height:28px;border-radius:.5rem;background:var(--s2);display:flex;align-items:center;justify-content:center;color:var(--t2)}
-
-/* Etype grid */
 .etype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;margin-bottom:1.125rem}
 .etype-btn{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:.875rem .5rem;
   border-radius:1rem;background:var(--s2);border:1.5px solid transparent;transition:all .15s;font-family:'Syne',sans-serif}
 .etype-btn.on{background:var(--acc3)}
 .etype-ico{font-size:1.25rem}
 .etype-lbl{font-size:.65rem;color:var(--t2);text-align:center}
-
-/* Slider */
 .slider-wrap{margin-bottom:1rem;display:none}
 .slider-hdr{display:flex;justify-content:space-between;margin-bottom:.5rem}
 .slider-lbl{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t2)}
 .slider-num{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--acc)}
 input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:4px;background:var(--b2);outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 0 4px rgba(94,234,212,.12)}
-
-/* Note */
 .note-wrap{display:none;margin-bottom:1rem}
 .note-input{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:1rem;
   padding:.875rem 1rem;font-size:.875rem;color:var(--t1);resize:none;outline:none}
 .note-input::placeholder{color:var(--t3)}
-
-/* Save btn */
 .save-btn{width:100%;padding:.9rem;border-radius:1rem;font-size:.7rem;font-weight:500;
   letter-spacing:.12em;text-transform:uppercase;transition:all .2s;font-family:'Syne',sans-serif}
 .save-btn.ready{background:var(--acc);color:var(--bg)}
 .save-btn.idle{background:var(--s3);color:var(--t3)}
-
-/* Toast */
 .toast{position:fixed;top:5.5rem;left:50%;transform:translateX(-50%) translateY(-10px);
   padding:.5rem 1.5rem;border-radius:999px;font-size:.8rem;font-weight:600;
   z-index:70;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.4,0,.2,1)}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.ok{background:var(--acc);color:var(--bg)}
 .toast.err{background:var(--hgh);color:#fff}
-
-/* Loading & empty */
 .loading{display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--t3);font-size:.8rem;gap:.5rem}
 .spin{width:14px;height:14px;border:2px solid var(--b2);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty{text-align:center;padding:2rem 1rem;color:var(--t3);font-size:.8rem;line-height:1.6}
-
-/* Login screen */
 .login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:100dvh;padding:2rem;gap:1.5rem}
 .login-logo{font-size:2rem;font-weight:700;letter-spacing:.04em;color:var(--t1)}
@@ -205,6 +159,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .login-toggle{font-size:.75rem;color:var(--t2);text-align:center;cursor:pointer}
 .login-toggle b{color:var(--acc);cursor:pointer}
 .login-err{font-size:.75rem;color:var(--hgh);text-align:center;margin-bottom:.75rem;display:none}
+/* Alert overlay — z-index más alto que el modal de eventos */
+.alert-overlay{position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;
+  padding:1.25rem;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.alert-overlay.on{display:flex}
+.alert-modal{background:var(--s1);border:1.5px solid rgba(248,113,113,.28);border-radius:1.5rem;
+  padding:1.75rem 1.5rem;width:100%;max-width:420px;animation:slideup .22s cubic-bezier(.4,0,.2,1);text-align:center}
+/* Push toggle btn */
+.push-btn{font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .8rem;
+  border-radius:.5rem;background:var(--s2);border:1px solid var(--b2);color:var(--acc);
+  font-family:'Syne',sans-serif;font-weight:500;transition:all .15s}
+.push-btn.active{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.25);color:var(--hgh)}
 </style>
 </head>
 <body>
@@ -212,9 +177,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 <!-- LOGIN -->
 <div id="login-screen" class="login-wrap">
-  <div>
-    <div class="login-logo">Intr<span>un</span></div>
-  </div>
+  <div><div class="login-logo">Intr<span>un</span></div></div>
   <p class="login-sub">Monitoreo inteligente para pacientes con epilepsia</p>
   <div class="login-card">
     <p id="login-err" class="login-err"></p>
@@ -229,13 +192,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <!-- APP -->
 <div id="app-shell" style="display:none">
 
-<!-- TOPBAR -->
 <header class="topbar">
   <div class="brand">Intr<span>un</span></div>
   <div class="topbar-r">
     <div class="sync-badge" id="sync-lbl">
-      <span class="dot" style="background:var(--t3)"></span>
-      Cargando...
+      <span class="dot" style="background:var(--t3)"></span>Cargando...
     </div>
     <div style="display:flex;align-items:center;gap:.375rem">
       <div class="pulse"></div>
@@ -253,7 +214,39 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
   <div class="alert-banner" id="alert-banner" style="display:none"></div>
 
-  <!-- Risk card -->
+  <!-- Predicción personalizada -->
+  <div class="card" id="pred-card">
+    <div class="cp">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+        <span class="slabel" style="margin:0">Predicción personal</span>
+        <span class="badge" id="pred-badge" style="background:rgba(255,255,255,.05);color:var(--t3)">APRENDIENDO</span>
+      </div>
+      <!-- Barra de aprendizaje -->
+      <div id="learn-prog">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <span style="font-size:.65rem;color:var(--t3)" id="learn-hint">Construyendo perfil personal...</span>
+          <span style="font-size:.65rem;font-family:'DM Mono',monospace;color:var(--acc)" id="samples-lbl">0 lecturas</span>
+        </div>
+        <div style="height:3px;background:var(--b2);border-radius:4px;overflow:hidden">
+          <div id="learn-bar" style="height:100%;border-radius:4px;background:var(--acc);width:0%;transition:width .6s"></div>
+        </div>
+      </div>
+      <!-- Análisis de patrón (visible cuando hay baseline) -->
+      <div id="pattern-section" style="display:none;margin-top:.875rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+          <span style="font-size:.62rem;color:var(--t2)">Similitud patrón pre-crisis</span>
+          <span style="font-size:.65rem;font-family:'DM Mono',monospace" id="match-pct-lbl">–</span>
+        </div>
+        <div style="height:4px;background:var(--b2);border-radius:4px;overflow:hidden;margin-bottom:.875rem">
+          <div id="match-bar" style="height:100%;border-radius:4px;width:0%;transition:width .6s;background:var(--acc)"></div>
+        </div>
+        <div id="pred-factors"></div>
+        <p id="pred-msg" style="font-size:.75rem;color:var(--t2);line-height:1.55;margin-top:.625rem"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Índice de riesgo -->
   <div class="card"><div class="cp">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
       <span class="slabel" style="margin:0">Índice de riesgo</span>
@@ -276,11 +269,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="factor"><span class="flbl">Sueño</span><div class="fval"><span class="dot" id="dot-sleep" style="background:var(--t3)"></span><span id="val-sleep">–</span></div></div>
         <div class="factor"><span class="flbl">FC</span><div class="fval"><span class="dot" id="dot-hr" style="background:var(--t3)"></span><span id="val-hr">–</span></div></div>
         <div class="factor"><span class="flbl">Estrés</span><div class="fval"><span class="dot" id="dot-stress" style="background:var(--t3)"></span><span id="val-stress">–</span></div></div>
+        <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--b1)">
+          <span style="font-size:.55rem;color:var(--t3)" id="risk-source-lbl">umbral genérico</span>
+        </div>
       </div>
     </div>
   </div></div>
 
-  <!-- Vitals -->
+  <!-- Signos vitales -->
   <div class="card"><div class="cp">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
       <span class="slabel" style="margin:0">Signos vitales</span>
@@ -314,7 +310,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </div></div>
 </section>
 
-<!-- HISTORY -->
+<!-- HISTORIAL -->
 <section class="screen" id="s-hist">
   <div class="ph"><p class="ph-eye">Historial clínico</p><h1 class="ph-title">Últimos <em>14 días</em></h1></div>
 
@@ -329,9 +325,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </div></div>
 
   <div class="card"><div class="cp">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
-      <span class="slabel" style="margin:0">FC — historial</span>
-    </div>
+    <span class="slabel" style="margin-bottom:.5rem">FC — historial</span>
     <svg id="sparkline" viewBox="0 0 300 50" preserveAspectRatio="none" style="width:100%;height:50px;display:block"></svg>
   </div></div>
 
@@ -341,7 +335,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </div></div>
 </section>
 
-<!-- INSIGHTS -->
+<!-- ANÁLISIS -->
 <section class="screen" id="s-ins">
   <div class="ph"><p class="ph-eye">Análisis inteligente</p><h1 class="ph-title">Insights de la <em>semana</em></h1></div>
   <div class="card"><div class="cp" style="display:flex;align-items:center;gap:1rem">
@@ -353,13 +347,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </svg>
     <div>
       <p style="font-size:.875rem;font-weight:500;color:var(--t1);margin-bottom:.375rem">Riesgo semanal promedio</p>
-      <p style="font-size:.75rem;color:var(--t2);line-height:1.6">Basado en FC, HRV, sueño, medicación y eventos registrados.</p>
+      <p style="font-size:.75rem;color:var(--t2);line-height:1.6" id="ins-model-lbl">Basado en FC, HRV, sueño, medicación y eventos registrados.</p>
     </div>
   </div></div>
   <div id="ins-list" style="display:flex;flex-direction:column;gap:.75rem"></div>
 </section>
 
-<!-- PROFILE -->
+<!-- PERFIL -->
 <section class="screen" id="s-prof">
   <div class="ph"><p class="ph-eye">Cuenta</p><h1 class="ph-title">Mi <em>perfil</em></h1></div>
 
@@ -379,11 +373,31 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <div class="stat-card"><div class="stat-val" id="st-days">–</div><div class="stat-lbl">Días registrando</div></div>
   </div>
 
+  <!-- Modelo de aprendizaje -->
+  <div class="card"><div class="cp">
+    <span class="slabel">Modelo de predicción</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <span style="font-size:.75rem;color:var(--t2)" id="model-status-lbl">Sin datos aún</span>
+      <span style="font-size:.65rem;font-family:'DM Mono',monospace;color:var(--acc)" id="model-samples-lbl">0 lecturas</span>
+    </div>
+    <div style="height:3px;background:var(--b2);border-radius:4px;overflow:hidden;margin-bottom:.875rem">
+      <div id="model-bar" style="height:100%;border-radius:4px;background:var(--acc);width:0%;transition:width .6s"></div>
+    </div>
+    <div id="model-crisis-info" style="display:none;padding:.75rem;background:var(--s2);border-radius:.875rem">
+      <p style="font-size:.72rem;color:var(--t2);line-height:1.6" id="model-crisis-desc"></p>
+    </div>
+  </div></div>
+
   <div class="card"><div class="cp">
     <span class="slabel">Conexiones</span>
     <div class="conn-row"><div class="conn-ico">⌚</div><div style="flex:1"><div class="conn-name">Apple Watch</div><div class="conn-sub">Datos vía Apple Health</div></div><span class="dot" style="background:var(--mid)"></span></div>
     <div class="conn-row"><div class="conn-ico">🗄️</div><div style="flex:1"><div class="conn-name">Supabase</div><div class="conn-sub">Base de datos conectada</div></div><span class="dot" style="background:var(--low)" id="db-dot"></span></div>
-    <div class="conn-row" style="border-bottom:none"><div class="conn-ico">🔒</div><div style="flex:1"><div class="conn-name">RLS Activo</div><div class="conn-sub">Datos protegidos</div></div><span class="dot" style="background:var(--low)"></span></div>
+    <div class="conn-row"><div class="conn-ico">🔒</div><div style="flex:1"><div class="conn-name">RLS Activo</div><div class="conn-sub">Datos protegidos</div></div><span class="dot" style="background:var(--low)"></span></div>
+    <div class="conn-row" style="border-bottom:none">
+      <div class="conn-ico">🔔</div>
+      <div style="flex:1"><div class="conn-name">Notificaciones push</div><div class="conn-sub" id="push-status-lbl">Verificando...</div></div>
+      <button class="push-btn" id="push-btn" onclick="togglePush()">Activar</button>
+    </div>
   </div></div>
 
   <button onclick="doSignOut()" style="display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:1rem;border-radius:1.125rem;background:var(--s1);border:1px solid var(--b1);color:var(--t2);font-size:.875rem;font-family:'Syne',sans-serif">
@@ -414,7 +428,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 </div><!-- /app-shell -->
 
-<!-- MODAL -->
+<!-- MODAL EVENTO -->
 <div class="overlay" id="modal" onclick="overlayClick(event)">
   <div class="modal">
     <div class="modal-hdr">
@@ -435,18 +449,49 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </div>
 </div>
 
+<!-- MODAL ALERTA DE RIESGO -->
+<div class="alert-overlay" id="alert-overlay" onclick="alertOverlayClick(event)">
+  <div class="alert-modal">
+    <div id="alert-icon" style="font-size:2.75rem;margin-bottom:.875rem">⚠️</div>
+    <p id="alert-title" style="font-size:1.05rem;font-weight:600;color:var(--hgh);margin-bottom:.5rem">Riesgo elevado detectado</p>
+    <p id="alert-body" style="font-size:.78rem;color:var(--t2);line-height:1.65;margin-bottom:1rem"></p>
+    <div id="alert-factors" style="margin-bottom:1rem;text-align:left;background:var(--s2);border-radius:.875rem;padding:.75rem;display:none"></div>
+    <div style="display:flex;flex-direction:column;gap:.625rem">
+      <button onclick="alertAction('med')"
+        style="width:100%;padding:.875rem;border-radius:1rem;background:var(--hgh);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-family:'Syne',sans-serif">
+        💊 Tomar medicación
+      </button>
+      <button onclick="alertAction('rest')"
+        style="width:100%;padding:.875rem;border-radius:1rem;background:rgba(94,234,212,.1);border:1px solid rgba(94,234,212,.2);color:var(--acc);font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-family:'Syne',sans-serif">
+        🛋️ Descansar ahora
+      </button>
+      <button onclick="closeAlert()"
+        style="font-size:.75rem;color:var(--t3);padding:.5rem;font-family:'Syne',sans-serif;text-decoration:underline">
+        Entendido, seguir monitoreando
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 </div><!-- /root -->
 
 <script>
-// ── Supabase ─────────────────────────────────────────────────────────────────
+// ── Supabase ──────────────────────────────────────────────────────────────────
 const { createClient } = supabase;
 const sb = createClient(
   'https://wsiaflvanlmqancysopl.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzaWFmbHZhbmxtcWFuY3lzb3BsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzQyNzEsImV4cCI6MjA5NDQ1MDI3MX0.xAmlmRMTsLyRbBTePB0M8qyw8tp5hplAWHnI1xzSyTk'
 );
+
+// ── Config ────────────────────────────────────────────────────────────────────
+const VAPID_PUBLIC    = 'BMPNIXcM7jBsWMS5uRz0gHRzbhqEd_2xhm8mPfargklY0nwAxzttT2MvPv2P4eFviTKtdUkcuu18XNCedwHSRUc';
+const BASELINE_ALPHA  = 0.12;  // tasa de aprendizaje EMA (vida media ~7 lecturas)
+const CRISIS_ALPHA    = 0.30;  // aprende más rápido de eventos de crisis
+const MIN_SAMPLES     = 7;     // mínimo para activar el modelo personal
+const ALERT_COOLDOWN  = 4 * 60 * 60 * 1000; // 4 horas entre alertas
 
 // ── Event types ───────────────────────────────────────────────────────────────
 const ET = {
@@ -458,14 +503,15 @@ const ET = {
 };
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let currentUser = null;
+let currentUser  = null;
 let lastVitals   = null;
 let allEvents    = [];
 let allVitals    = [];
+let userBaseline = null;
 let selType      = null;
 let isRegister   = false;
 
-// ── Auth mode toggle ──────────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────────────────────
 function toggleMode() {
   isRegister = !isRegister;
   document.getElementById('mode-lbl').textContent = isRegister ? 'Modo: crear cuenta' : 'Modo: iniciar sesión';
@@ -476,38 +522,29 @@ function toggleMode() {
 async function doAuth() {
   const email = document.getElementById('li-email').value.trim();
   const pass  = document.getElementById('li-pass').value;
-  const err   = document.getElementById('login-err');
-  err.style.display = 'none';
-
+  document.getElementById('login-err').style.display = 'none';
   if (!email || !pass) { showErr('Completá email y contraseña'); return; }
-
   let res;
   if (isRegister) {
     res = await sb.auth.signUp({ email, password: pass });
   } else {
     res = await sb.auth.signInWithPassword({ email, password: pass });
   }
-
   if (res.error) { showErr(res.error.message); return; }
-
-  if (isRegister && !res.data.session) {
-    showErr('Revisá tu email para confirmar la cuenta.'); return;
-  }
-
+  if (isRegister && !res.data.session) { showErr('Revisá tu email para confirmar la cuenta.'); return; }
   await initApp(res.data.user);
 }
 
 function showErr(msg) {
   const el = document.getElementById('login-err');
-  el.textContent = msg;
-  el.style.display = 'block';
+  el.textContent = msg; el.style.display = 'block';
 }
 
 async function doSignOut() {
   await sb.auth.signOut();
   document.getElementById('app-shell').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  currentUser = null;
+  currentUser = null; userBaseline = null;
 }
 
 // ── Init app ──────────────────────────────────────────────────────────────────
@@ -515,44 +552,260 @@ async function initApp(user) {
   currentUser = user;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-shell').style.display = 'block';
-
-  // Set date
   document.getElementById('today-str').textContent =
     new Date().toLocaleDateString('es-AR', {weekday:'long', day:'numeric', month:'long'});
-
-  // Set user info
   const name = user.email.split('@')[0];
-  document.getElementById('user-name').textContent = name;
-  document.getElementById('prof-name').textContent = name;
+  document.getElementById('user-name').textContent  = name;
+  document.getElementById('prof-name').textContent  = name;
   document.getElementById('prof-email').textContent = user.email;
-
   await loadAll();
   subscribeRealtime();
+  registerServiceWorker();
 }
 
-// ── Load all data ─────────────────────────────────────────────────────────────
+// ── Carga de datos ────────────────────────────────────────────────────────────
 async function loadAll() {
-  await Promise.all([loadVitals(), loadEvents()]);
+  await Promise.all([loadVitals(), loadEvents(), loadBaseline()]);
+  if (!userBaseline && allVitals.length > 0) await bootstrapBaseline();
   renderAll();
 }
 
 async function loadVitals() {
   const { data } = await sb.from('vitals')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('recorded_at', { ascending: false })
-    .limit(50);
+    .select('*').eq('user_id', currentUser.id)
+    .order('recorded_at', { ascending: false }).limit(50);
   allVitals = data || [];
   lastVitals = allVitals[0] || null;
 }
 
 async function loadEvents() {
   const { data } = await sb.from('events')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('recorded_at', { ascending: false })
-    .limit(100);
+    .select('*').eq('user_id', currentUser.id)
+    .order('recorded_at', { ascending: false }).limit(100);
   allEvents = data || [];
+}
+
+// ── Baseline ──────────────────────────────────────────────────────────────────
+async function loadBaseline() {
+  const { data } = await sb.from('user_baselines')
+    .select('*').eq('user_id', currentUser.id).single();
+  userBaseline = data || null;
+}
+
+async function saveBaseline() {
+  if (!userBaseline) return;
+  userBaseline.updated_at = new Date().toISOString();
+  await sb.from('user_baselines').upsert(userBaseline);
+}
+
+// Construye el baseline inicial a partir del historial existente
+async function bootstrapBaseline() {
+  if (!allVitals.length) return;
+  const vitals = [...allVitals].reverse();
+
+  const vals    = key => vitals.map(v => v[key]).filter(x => x != null && x > 0);
+  const avg     = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+  const stdDev  = (arr, m) => {
+    if (arr.length < 2) return null;
+    return Math.sqrt(arr.reduce((a,b)=>a+(b-m)**2,0)/arr.length);
+  };
+
+  const hv = vals('hrv'), sv = vals('sleep_hours'), hrv = vals('heart_rate'), stv = vals('stress_pct');
+  const ah = avg(hv), as_ = avg(sv), ahr = avg(hrv) || 70, ast = avg(stv) || 50;
+
+  userBaseline = {
+    user_id:       currentUser.id,
+    avg_hrv:       ah,   avg_sleep:  as_,  avg_hr:     ahr,  avg_stress: ast,
+    avg_steps:     avg(vals('steps')),
+    std_hrv:       stdDev(hv, ah)   ?? 5,
+    std_sleep:     stdDev(sv, as_)  ?? 0.5,
+    std_hr:        stdDev(hrv, ahr) ?? 8,
+    std_stress:    stdDev(stv, ast) ?? 10,
+    samples:       vitals.length,
+    crisis_count:  0,
+    pre_crisis_hrv: null, pre_crisis_sleep: null,
+    pre_crisis_stress: null, pre_crisis_hr: null,
+    last_alert_at: null,
+  };
+
+  const crises = allEvents.filter(e => e.type === 'crisis');
+  for (const c of crises) await _extractPreCrisis(c);
+
+  await saveBaseline();
+}
+
+// ── Motor de aprendizaje ──────────────────────────────────────────────────────
+function ema(current, newVal, alpha) {
+  if (current == null || current === 0) return newVal ?? 0;
+  if (newVal == null) return current;
+  return alpha * newVal + (1 - alpha) * current;
+}
+
+function emaStd(std, mean, newVal, alpha) {
+  if (newVal == null) return std;
+  const d = newVal - mean;
+  return Math.sqrt(alpha * d * d + (1 - alpha) * std * std);
+}
+
+async function updateBaselineWithVital(v) {
+  if (!v || !userBaseline) return;
+  const bl = userBaseline, a = BASELINE_ALPHA;
+  if (v.hrv)         { bl.std_hrv    = emaStd(bl.std_hrv,    bl.avg_hrv,    v.hrv,         a); bl.avg_hrv    = ema(bl.avg_hrv,    v.hrv,         a); }
+  if (v.sleep_hours) { bl.std_sleep  = emaStd(bl.std_sleep,  bl.avg_sleep,  v.sleep_hours, a); bl.avg_sleep  = ema(bl.avg_sleep,  v.sleep_hours, a); }
+  if (v.heart_rate)  { bl.std_hr     = emaStd(bl.std_hr,     bl.avg_hr,     v.heart_rate,  a); bl.avg_hr     = ema(bl.avg_hr,     v.heart_rate,  a); }
+  if (v.stress_pct)  { bl.std_stress = emaStd(bl.std_stress, bl.avg_stress, v.stress_pct,  a); bl.avg_stress = ema(bl.avg_stress, v.stress_pct,  a); }
+  if (v.steps)       bl.avg_steps = ema(bl.avg_steps, v.steps, a);
+  bl.samples = (bl.samples || 0) + 1;
+  await saveBaseline();
+}
+
+async function _extractPreCrisis(crisisEvent) {
+  if (!userBaseline) return;
+  const ct = new Date(crisisEvent.recorded_at).getTime();
+  const pre = allVitals.filter(v => {
+    const t = new Date(v.recorded_at).getTime();
+    return t >= ct - 86400000 && t < ct;
+  });
+  if (!pre.length) return;
+  const avg = key => {
+    const vals = pre.map(v => v[key]).filter(x => x != null && x > 0);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+  };
+  const bl = userBaseline, a = CRISIS_ALPHA;
+  bl.pre_crisis_hrv    = ema(bl.pre_crisis_hrv,    avg('hrv'),          a);
+  bl.pre_crisis_sleep  = ema(bl.pre_crisis_sleep,  avg('sleep_hours'),  a);
+  bl.pre_crisis_stress = ema(bl.pre_crisis_stress, avg('stress_pct'),   a);
+  bl.pre_crisis_hr     = ema(bl.pre_crisis_hr,     avg('heart_rate'),   a);
+  bl.crisis_count = (bl.crisis_count || 0) + 1;
+}
+
+// ── Riesgo personalizado ──────────────────────────────────────────────────────
+function calcRisk(v) {
+  if (!v) return 0;
+  let s = 0;
+  const hrv = v.hrv || 0;
+  s += hrv >= 50 ? 0 : hrv >= 35 ? 10 : hrv >= 20 ? 18 : 25;
+  const sl = v.sleep_hours || 0;
+  s += sl >= 7.5 ? 0 : sl >= 6 ? 8 : sl >= 5 ? 16 : 25;
+  const st = v.stress_pct || 0;
+  s += st < 40 ? 0 : st < 60 ? 5 : st < 80 ? 10 : 15;
+  const hr = v.heart_rate || 70;
+  s += hr >= 50 && hr <= 100 ? 0 : hr > 100 ? 10 : 5;
+  return Math.min(100, s);
+}
+
+function calcPersonalRisk(v) {
+  if (!v) return 0;
+  const bl = userBaseline;
+  if (!bl || bl.samples < MIN_SAMPLES) return calcRisk(v);
+
+  let score = 0;
+  const zContrib = (mean, std, val, dir, weight) => {
+    if (val == null || !std || std === 0) return 0;
+    const z = dir === 'low' ? (mean - val) / std : (val - mean) / std;
+    return Math.max(0, Math.min(weight, (z / 1.5) * weight));
+  };
+
+  score += zContrib(bl.avg_hrv,    bl.std_hrv,    v.hrv,          'low',  28);
+  score += zContrib(bl.avg_sleep,  bl.std_sleep,  v.sleep_hours,  'low',  25);
+  score += zContrib(bl.avg_stress, bl.std_stress, v.stress_pct,   'high', 22);
+  const hr = v.heart_rate || bl.avg_hr;
+  score += hr < 50 || hr > 105 ? 15 : hr > 95 ? 7 : 0;
+
+  if (bl.pre_crisis_hrv && bl.crisis_count >= 1) {
+    score += (getPatternMatchFromVital(v) / 100) * 20;
+  }
+  return Math.min(100, Math.round(score));
+}
+
+function getPatternMatchFromVital(v) {
+  const bl = userBaseline;
+  if (!bl || !bl.pre_crisis_hrv || bl.crisis_count < 1) return 0;
+  let ok = 0, total = 0;
+  if (v.hrv         != null && bl.pre_crisis_hrv)    { total++; if (v.hrv         <= bl.pre_crisis_hrv    * 1.15) ok++; }
+  if (v.sleep_hours != null && bl.pre_crisis_sleep)  { total++; if (v.sleep_hours <= bl.pre_crisis_sleep  * 1.15) ok++; }
+  if (v.stress_pct  != null && bl.pre_crisis_stress) { total++; if (v.stress_pct  >= bl.pre_crisis_stress * 0.85) ok++; }
+  if (v.heart_rate  != null && bl.pre_crisis_hr)     { total++; if (Math.abs(v.heart_rate - bl.pre_crisis_hr) < bl.std_hr * 2) ok++; }
+  return total > 0 ? Math.round((ok / total) * 100) : 0;
+}
+
+function getPatternMatch() {
+  return lastVitals ? getPatternMatchFromVital(lastVitals) : 0;
+}
+
+function riskColor(s) { return s < 30 ? 'var(--low)' : s < 65 ? 'var(--mid)' : 'var(--hgh)'; }
+function riskLabel(s) { return s < 30 ? 'BAJO' : s < 65 ? 'MODERADO' : 'ALTO'; }
+function dotColor(val, ok, warn) {
+  if (val == null) return 'var(--t3)';
+  return val >= ok ? 'var(--low)' : val >= warn ? 'var(--mid)' : 'var(--hgh)';
+}
+
+// ── Alerta automática ─────────────────────────────────────────────────────────
+function checkAndAlert() {
+  const v = lastVitals;
+  if (!v) return;
+  const score = calcPersonalRisk(v);
+  const match = getPatternMatch();
+  const hasCrisisData = userBaseline && userBaseline.crisis_count >= 1;
+  const shouldAlert = score >= 65 && (hasCrisisData ? match >= 50 : score >= 80);
+  if (!shouldAlert) return;
+
+  const bl = userBaseline;
+  if (bl && bl.last_alert_at) {
+    if (Date.now() - new Date(bl.last_alert_at).getTime() < ALERT_COOLDOWN) return;
+  }
+  if (bl) { bl.last_alert_at = new Date().toISOString(); saveBaseline(); }
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+  showAlertModal(score, match);
+  sendPushAlert(score, match);
+}
+
+function showAlertModal(score, match) {
+  const isCritical = score >= 80;
+  document.getElementById('alert-icon').textContent = isCritical ? '🚨' : '⚠️';
+  document.getElementById('alert-title').textContent = isCritical
+    ? 'Riesgo crítico detectado'
+    : 'Patrón pre-crisis detectado';
+
+  document.getElementById('alert-body').textContent = match > 0
+    ? `Tu perfil actual coincide en un ${match}% con el patrón registrado antes de tus crisis anteriores. Riesgo: ${score}/100.`
+    : `Tus signos vitales presentan una desviación significativa de tu línea base personal (riesgo: ${score}/100).`;
+
+  const v = lastVitals, bl = userBaseline;
+  const factors = [];
+  if (v && bl && bl.samples >= MIN_SAMPLES) {
+    if (v.hrv   && v.hrv   < bl.avg_hrv   * 0.85) factors.push(`⚡ HRV ${v.hrv}ms (tu normal: ~${Math.round(bl.avg_hrv)}ms)`);
+    if (v.sleep_hours && v.sleep_hours < bl.avg_sleep * 0.85) factors.push(`🌙 Sueño ${v.sleep_hours}h (tu normal: ~${bl.avg_sleep.toFixed(1)}h)`);
+    if (v.stress_pct && v.stress_pct > bl.avg_stress * 1.2) factors.push(`🧠 Estrés ${v.stress_pct}% (tu normal: ~${Math.round(bl.avg_stress)}%)`);
+  }
+  const factorsEl = document.getElementById('alert-factors');
+  if (factors.length) {
+    factorsEl.innerHTML = factors.map(f => `<div style="font-size:.72rem;color:var(--hgh);padding:.2rem 0">${f}</div>`).join('');
+    factorsEl.style.display = 'block';
+  } else {
+    factorsEl.style.display = 'none';
+  }
+  document.getElementById('alert-overlay').classList.add('on');
+}
+
+function closeAlert() { document.getElementById('alert-overlay').classList.remove('on'); }
+
+function alertOverlayClick(e) {
+  if (e.target === document.getElementById('alert-overlay')) closeAlert();
+}
+
+async function alertAction(action) {
+  closeAlert();
+  if (action === 'med') {
+    await sb.from('events').insert({
+      user_id: currentUser.id, type: 'medicacion', severity: 5,
+      notes: 'Registrado desde alerta automática', recorded_at: new Date().toISOString(),
+    });
+    await loadEvents(); renderEvList(); renderAllEvs(); renderProfile();
+    showToast('Medicación registrada ✓', 'ok');
+  } else {
+    showToast('Recordatorio: descansá y tomá tu medicación', 'ok');
+  }
 }
 
 // ── Realtime ──────────────────────────────────────────────────────────────────
@@ -561,96 +814,62 @@ function subscribeRealtime() {
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'vitals',
       filter: `user_id=eq.${currentUser.id}` }, async () => {
       await loadVitals();
-      renderVitals();
-      renderRisk();
+      if (!userBaseline && allVitals.length >= MIN_SAMPLES) {
+        await bootstrapBaseline();
+      } else if (userBaseline) {
+        await updateBaselineWithVital(lastVitals);
+      }
+      renderVitals(); renderRisk(); renderPrediction(); renderHRBars(); renderInsights();
+      checkAndAlert();
       showToast('Nuevos vitales recibidos', 'ok');
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'events',
       filter: `user_id=eq.${currentUser.id}` }, async () => {
-      await loadEvents();
-      renderEvList();
-      renderAllEvs();
+      await loadEvents(); renderEvList(); renderAllEvs();
     })
     .subscribe(status => {
       const el = document.getElementById('sync-lbl');
-      if (status === 'SUBSCRIBED') {
+      if (status === 'SUBSCRIBED')
         el.innerHTML = '<span class="dot" style="background:var(--low)"></span>Conectado';
-      }
     });
-}
-
-// ── Risk engine ───────────────────────────────────────────────────────────────
-function calcRisk(v) {
-  if (!v) return 0;
-  let score = 0;
-  // HRV (0-25)
-  const hrv = v.hrv || 0;
-  score += hrv >= 50 ? 0 : hrv >= 35 ? 10 : hrv >= 20 ? 18 : 25;
-  // Sleep (0-25)
-  const sl = v.sleep_hours || 0;
-  score += sl >= 7.5 ? 0 : sl >= 6 ? 8 : sl >= 5 ? 16 : 25;
-  // Stress (0-15)
-  const st = v.stress_pct || 0;
-  score += st < 40 ? 0 : st < 60 ? 5 : st < 80 ? 10 : 15;
-  // HR (0-10)
-  const hr = v.heart_rate || 70;
-  score += hr >= 50 && hr <= 100 ? 0 : hr > 100 ? 10 : 5;
-  return Math.min(100, score);
-}
-
-function riskColor(s) { return s < 30 ? 'var(--low)' : s < 65 ? 'var(--mid)' : 'var(--hgh)' }
-function riskLabel(s) { return s < 30 ? 'BAJO' : s < 65 ? 'MODERADO' : 'ALTO' }
-function dotColor(val, ok, warn) {
-  if (val === null || val === undefined) return 'var(--t3)';
-  return val >= ok ? 'var(--low)' : val >= warn ? 'var(--mid)' : 'var(--hgh)';
 }
 
 // ── Render all ────────────────────────────────────────────────────────────────
 function renderAll() {
-  renderVitals();
-  renderRisk();
-  renderEvList();
-  renderAllEvs();
-  renderHmap();
-  renderSpark();
-  renderInsights();
-  renderProfile();
-  renderHRBars();
+  renderVitals(); renderRisk(); renderPrediction(); renderEvList(); renderAllEvs();
+  renderHmap(); renderSpark(); renderInsights(); renderProfile(); renderHRBars();
 }
 
-// ── Vitals ────────────────────────────────────────────────────────────────────
+// ── Vitales ───────────────────────────────────────────────────────────────────
 function renderVitals() {
   const v = lastVitals;
-  const set = (id, val, unit='') => {
-    document.getElementById(id).textContent = val !== null && val !== undefined ? val : '–';
-  };
+  const set = (id, val) => { document.getElementById(id).textContent = val != null ? val : '–'; };
   set('v-hr',    v?.heart_rate);
   set('v-hrv',   v?.hrv);
   set('v-sleep', v?.sleep_hours);
   set('v-steps', v?.steps ? v.steps.toLocaleString() : '–');
-
   document.getElementById('last-sync-lbl').textContent =
-    v ? 'última lectura: ' + fmt(v.recorded_at) : 'Sin datos aún';
-
-  // Dots
+    v ? 'última: ' + fmt(v.recorded_at) : 'Sin datos aún';
   if (v) {
-    document.getElementById('dot-hrv').style.background   = dotColor(v.hrv, 45, 25);
-    document.getElementById('dot-sleep').style.background = dotColor(v.sleep_hours, 7, 5);
-    document.getElementById('dot-hr').style.background    = v.heart_rate >= 50 && v.heart_rate <= 100 ? 'var(--low)' : 'var(--mid)';
-    document.getElementById('dot-stress').style.background= dotColor(100 - (v.stress_pct||0), 60, 40);
-    document.getElementById('val-hrv').textContent   = v.hrv ? v.hrv + ' ms' : '–';
-    document.getElementById('val-sleep').textContent = v.sleep_hours ? v.sleep_hours + ' h' : '–';
-    document.getElementById('val-hr').textContent    = v.heart_rate ? v.heart_rate + ' bpm' : '–';
-    document.getElementById('val-stress').textContent= v.stress_pct ? v.stress_pct + ' %' : '–';
+    document.getElementById('dot-hrv').style.background    = dotColor(v.hrv, 45, 25);
+    document.getElementById('dot-sleep').style.background  = dotColor(v.sleep_hours, 7, 5);
+    document.getElementById('dot-hr').style.background     = v.heart_rate >= 50 && v.heart_rate <= 100 ? 'var(--low)' : 'var(--mid)';
+    document.getElementById('dot-stress').style.background = dotColor(100 - (v.stress_pct||0), 60, 40);
+    document.getElementById('val-hrv').textContent    = v.hrv         ? v.hrv + ' ms'        : '–';
+    document.getElementById('val-sleep').textContent  = v.sleep_hours ? v.sleep_hours + ' h' : '–';
+    document.getElementById('val-hr').textContent     = v.heart_rate  ? v.heart_rate + ' bpm': '–';
+    document.getElementById('val-stress').textContent = v.stress_pct  ? v.stress_pct + ' %'  : '–';
   }
 }
 
-// ── Risk ──────────────────────────────────────────────────────────────────────
+// ── Riesgo ────────────────────────────────────────────────────────────────────
 function renderRisk() {
-  const score = calcRisk(lastVitals);
-  const color = riskColor(score);
-  const label = riskLabel(score);
+  const score  = calcPersonalRisk(lastVitals);
+  const color  = riskColor(score);
+  const label  = riskLabel(score);
   const filled = (score / 100) * 163;
+  const bl = userBaseline;
+  const isPersonal = bl && bl.samples >= MIN_SAMPLES;
 
   document.getElementById('arc-path').setAttribute('stroke-dasharray', `${filled} 163`);
   document.getElementById('arc-score').textContent = lastVitals ? score : '–';
@@ -659,53 +878,132 @@ function renderRisk() {
   document.getElementById('risk-badge').textContent = lastVitals ? label : '–';
   document.getElementById('risk-badge').style.color = color;
   document.getElementById('risk-badge').style.background = color + '18';
+  document.getElementById('risk-source-lbl').textContent = isPersonal
+    ? `modelo personal · ${bl.samples} lecturas`
+    : 'umbral genérico · aprendiendo...';
 
-  // Insights arc
   document.getElementById('ins-arc').setAttribute('stroke-dasharray', `${filled} 163`);
   document.getElementById('ins-score').textContent = lastVitals ? score : '–';
   document.getElementById('ins-score').setAttribute('fill', color);
 
-  // Alert banner
   const banner = document.getElementById('alert-banner');
   if (!lastVitals) { banner.style.display = 'none'; return; }
 
   if (score >= 65) {
-    banner.style.display = 'flex';
-    banner.style.background = 'rgba(248,113,113,.07)';
-    banner.style.border = '1px solid rgba(248,113,113,.2)';
-    banner.style.color = 'var(--hgh)';
+    banner.style.cssText = 'display:flex;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);color:var(--hgh)';
     banner.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
-    Riesgo elevado detectado — Considerá contactar a tu médico.`;
+    Riesgo elevado${isPersonal ? ' (personalizado)' : ''} — Considerá contactar a tu médico.`;
   } else if (score >= 30) {
-    banner.style.display = 'flex';
-    banner.style.background = 'rgba(251,191,36,.07)';
-    banner.style.border = '1px solid rgba(251,191,36,.2)';
-    banner.style.color = 'var(--mid)';
+    banner.style.cssText = 'display:flex;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);color:var(--mid)';
     banner.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
-    Patrón moderado detectado — Revisá hidratación y descanso.`;
+    Patrón moderado — Revisá hidratación y descanso.`;
   } else {
     banner.style.display = 'none';
   }
 }
 
-// ── HR bars ───────────────────────────────────────────────────────────────────
+// ── Predicción ────────────────────────────────────────────────────────────────
+function renderPrediction() {
+  const bl = userBaseline;
+  const samples = bl?.samples || 0;
+  const pct = Math.min(100, Math.round((samples / 30) * 100));
+
+  document.getElementById('samples-lbl').textContent = `${samples} lecturas`;
+  document.getElementById('learn-bar').style.width = pct + '%';
+
+  if (!bl || samples < MIN_SAMPLES) {
+    document.getElementById('learn-hint').textContent = !bl
+      ? 'Enviá tu primera lectura desde el celular'
+      : `${MIN_SAMPLES - samples} lecturas más para activar el modelo`;
+    document.getElementById('pattern-section').style.display = 'none';
+    document.getElementById('pred-badge').textContent = 'APRENDIENDO';
+    document.getElementById('pred-badge').style.cssText = 'background:rgba(255,255,255,.05);color:var(--t3)';
+    return;
+  }
+
+  if (samples < 30) {
+    document.getElementById('learn-hint').textContent = `Modelo activo · mejora con más datos (${samples}/30)`;
+    document.getElementById('learn-prog').style.display = 'block';
+  } else {
+    document.getElementById('learn-hint').textContent = 'Modelo personalizado completo ✓';
+  }
+
+  document.getElementById('pattern-section').style.display = 'block';
+  const match = getPatternMatch();
+
+  if (!bl.pre_crisis_hrv || bl.crisis_count === 0) {
+    document.getElementById('pred-badge').textContent = 'PERFIL ACTIVO';
+    document.getElementById('pred-badge').style.cssText = 'background:rgba(94,234,212,.1);color:var(--acc)';
+    document.getElementById('match-pct-lbl').textContent = '–';
+    document.getElementById('match-bar').style.width = '0%';
+    document.getElementById('pred-factors').innerHTML = '';
+    document.getElementById('pred-msg').style.color = 'var(--t2)';
+    document.getElementById('pred-msg').textContent =
+      `Registrá eventos de tipo "Crisis" cuando ocurran para que la app aprenda tu firma personal de pre-crisis.`;
+    return;
+  }
+
+  const matchColor = match < 30 ? 'var(--low)' : match < 60 ? 'var(--mid)' : 'var(--hgh)';
+  document.getElementById('pred-badge').textContent = match >= 60 ? 'PATRÓN DETECTADO' : match >= 30 ? 'SIMILITUD MODERADA' : 'PATRÓN BAJO';
+  document.getElementById('pred-badge').style.cssText = `background:${matchColor}18;color:${matchColor}`;
+  document.getElementById('match-pct-lbl').textContent = `${match}%`;
+  document.getElementById('match-pct-lbl').style.color = matchColor;
+  document.getElementById('match-bar').style.width  = match + '%';
+  document.getElementById('match-bar').style.background = matchColor;
+
+  const v = lastVitals;
+  const factors = [];
+  if (v && bl) {
+    if (v.hrv) {
+      const d = Math.round(((bl.avg_hrv - v.hrv) / bl.avg_hrv) * 100);
+      const warn = v.hrv <= (bl.pre_crisis_hrv || Infinity) * 1.15;
+      factors.push({ l:'HRV', c:`${v.hrv}ms`, b:`~${Math.round(bl.avg_hrv)}ms`, warn, d: d > 0 ? `-${d}%` : `+${Math.abs(d)}%` });
+    }
+    if (v.sleep_hours) {
+      const d = Math.round(((bl.avg_sleep - v.sleep_hours) / (bl.avg_sleep||1)) * 100);
+      const warn = v.sleep_hours <= (bl.pre_crisis_sleep || Infinity) * 1.15;
+      factors.push({ l:'Sueño', c:`${v.sleep_hours}h`, b:`~${(bl.avg_sleep||0).toFixed(1)}h`, warn, d: d > 0 ? `-${d}%` : `+${Math.abs(d)}%` });
+    }
+    if (v.stress_pct) {
+      const d = Math.round(((v.stress_pct - bl.avg_stress) / (bl.avg_stress||1)) * 100);
+      const warn = v.stress_pct >= (bl.pre_crisis_stress || Infinity) * 0.85;
+      factors.push({ l:'Estrés', c:`${v.stress_pct}%`, b:`~${Math.round(bl.avg_stress)}%`, warn, d: d > 0 ? `+${d}%` : `-${Math.abs(d)}%` });
+    }
+  }
+  document.getElementById('pred-factors').innerHTML = factors.map(f => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.25rem 0">
+      <span style="font-size:.72rem;color:var(--t2)">${f.l}</span>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span style="font-size:.62rem;color:var(--t3)">${f.b}</span>
+        <span style="font-size:.62rem;color:${f.warn ? 'var(--hgh)' : 'var(--low)'}">${f.d}</span>
+        <span style="font-size:.72rem;font-family:'DM Mono',monospace;color:var(--t1)">${f.c}</span>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('pred-msg').style.color = match >= 60 ? 'var(--hgh)' : match >= 30 ? 'var(--mid)' : 'var(--t2)';
+  document.getElementById('pred-msg').textContent = match >= 60
+    ? `Alta similitud con el patrón previo a tus ${bl.crisis_count} crisis registradas. Considerá tomar tu medicación preventiva.`
+    : match >= 30
+    ? `Similitud moderada con el patrón pre-crisis. Mantente hidratado/a y descansá.`
+    : `Patrón actual no coincide con tu firma de pre-crisis. Seguí monitoreando.`;
+}
+
+// ── HR Bars ───────────────────────────────────────────────────────────────────
 function renderHRBars() {
   const recent = allVitals.slice(0, 24).reverse();
   if (!recent.length) {
-    document.getElementById('hr-bars').innerHTML =
-      '<div style="font-size:.65rem;color:var(--t3);text-align:center;width:100%">Sin datos de FC aún</div>';
+    document.getElementById('hr-bars').innerHTML = '<div style="font-size:.65rem;color:var(--t3);text-align:center;width:100%">Sin datos de FC aún</div>';
     return;
   }
   const vals = recent.map(v => v.heart_rate || 70);
   const mn = Math.min(...vals), mx = Math.max(...vals), rng = mx - mn || 1;
   document.getElementById('hr-bars').innerHTML = vals.map((v, i) => {
     const pct = Math.max(8, ((v - mn) / rng) * 100);
-    const isLast = i === vals.length - 1;
-    return `<div class="hr-bar" style="height:${pct}%;background:${isLast ? 'var(--acc)' : 'rgba(94,234,212,.2)'}"></div>`;
+    return `<div class="hr-bar" style="height:${pct}%;background:${i === vals.length-1 ? 'var(--acc)' : 'rgba(94,234,212,.2)'}"></div>`;
   }).join('');
 }
 
-// ── Events list ───────────────────────────────────────────────────────────────
+// ── Eventos ───────────────────────────────────────────────────────────────────
 function renderEvList() {
   const el = document.getElementById('ev-list');
   if (!allEvents.length) {
@@ -713,7 +1011,7 @@ function renderEvList() {
     return;
   }
   el.innerHTML = allEvents.slice(0, 4).map(ev => {
-    const c = ET[ev.type] || {e:'📋', l: ev.type, c:'#7A7A8A'};
+    const c = ET[ev.type] || {e:'📋', l:ev.type, c:'#7A7A8A'};
     return `<div class="ev-item">
       <div class="ev-ico" style="background:${c.c}18">${c.e}</div>
       <div style="flex:1;min-width:0">
@@ -727,12 +1025,9 @@ function renderEvList() {
 
 function renderAllEvs() {
   const el = document.getElementById('all-evs');
-  if (!allEvents.length) {
-    el.innerHTML = '<div class="empty">Sin eventos registrados aún.</div>';
-    return;
-  }
+  if (!allEvents.length) { el.innerHTML = '<div class="empty">Sin eventos registrados aún.</div>'; return; }
   el.innerHTML = allEvents.map(ev => {
-    const c = ET[ev.type] || {e:'📋', l: ev.type, c:'#7A7A8A'};
+    const c = ET[ev.type] || {e:'📋', l:ev.type, c:'#7A7A8A'};
     return `<div class="ev-row">
       <div class="ev-ico" style="background:${c.c}18">${c.e}</div>
       <div style="flex:1;min-width:0">
@@ -751,24 +1046,16 @@ function renderAllEvs() {
 function renderHmap() {
   const days = Array.from({length:14}, (_, i) => {
     const d = new Date(Date.now() - i * 86400000);
-    const dayStr = d.toISOString().split('T')[0];
-    const dayVital = allVitals.find(v => v.recorded_at?.startsWith(dayStr));
-    const score = dayVital ? calcRisk(dayVital) : null;
-    return { d, score };
+    const ds = d.toISOString().split('T')[0];
+    const dv = allVitals.find(v => v.recorded_at?.startsWith(ds));
+    return { d, score: dv ? calcRisk(dv) : null };
   }).reverse();
-
   document.getElementById('hmap').innerHTML = days.map(({ d, score }) => {
-    const [col, bg] = score === null
-      ? ['var(--t3)', 'var(--s2)']
-      : score < 30
-      ? ['var(--low)', 'rgba(94,234,212,.14)']
-      : score < 65
-      ? ['var(--mid)', 'rgba(251,191,36,.14)']
+    const [col, bg] = score === null ? ['var(--t3)', 'var(--s2)']
+      : score < 30 ? ['var(--low)', 'rgba(94,234,212,.14)']
+      : score < 65 ? ['var(--mid)', 'rgba(251,191,36,.14)']
       : ['var(--hgh)', 'rgba(248,113,113,.14)'];
-    return `<div>
-      <div class="hmap-cell" style="background:${bg};color:${col}">${score !== null ? score : '·'}</div>
-      <div class="hmap-day">${d.getDate()}</div>
-    </div>`;
+    return `<div><div class="hmap-cell" style="background:${bg};color:${col}">${score !== null ? score : '·'}</div><div class="hmap-day">${d.getDate()}</div></div>`;
   }).join('');
 }
 
@@ -776,13 +1063,11 @@ function renderHmap() {
 function renderSpark() {
   const data = allVitals.slice(0, 20).reverse().map(v => v.heart_rate || 70);
   if (data.length < 2) {
-    document.getElementById('sparkline').innerHTML =
-      '<text x="150" y="30" text-anchor="middle" fill="#3A3A48" font-size="11" font-family="Syne">Sin suficientes datos aún</text>';
+    document.getElementById('sparkline').innerHTML = '<text x="150" y="30" text-anchor="middle" fill="#3A3A48" font-size="11" font-family="Syne">Sin suficientes datos aún</text>';
     return;
   }
-  const W = 300, H = 50;
-  const mn = Math.min(...data), mx = Math.max(...data), rng = mx - mn || 1;
-  const pts = data.map((v, i) => `${(i / (data.length - 1)) * W},${H - ((v - mn) / rng) * H}`).join(' ');
+  const W=300, H=50, mn=Math.min(...data), mx=Math.max(...data), rng=mx-mn||1;
+  const pts = data.map((v,i)=>`${(i/(data.length-1))*W},${H-((v-mn)/rng)*H}`).join(' ');
   document.getElementById('sparkline').innerHTML = `
     <defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#5EEAD4" stop-opacity=".28"/>
@@ -792,30 +1077,74 @@ function renderSpark() {
     <polygon points="0,${H} ${pts} ${W},${H}" fill="url(#sg2)"/>`;
 }
 
-// ── Insights ──────────────────────────────────────────────────────────────────
+// ── Insights personalizados ───────────────────────────────────────────────────
 function renderInsights() {
-  const v = lastVitals;
+  const v = lastVitals, bl = userBaseline;
+  const isPersonal = bl && bl.samples >= MIN_SAMPLES;
   const ins = [];
+
+  if (isPersonal) {
+    document.getElementById('ins-model-lbl').textContent =
+      `Modelo personal activo · ${bl.samples} lecturas · ${bl.crisis_count} crisis analizadas.`;
+  }
 
   if (!v) {
     ins.push({ e:'📡', t:'Sin datos aún', c:'var(--t2)', badge:'INFO', bc:'var(--t2)',
       d:'Cargá tus primeros signos vitales para ver análisis personalizados.', a:null });
   } else {
+    if (isPersonal) {
+      ins.push({
+        e:'🧠', t:'Modelo personal activo', c:'var(--acc)', badge:'PERSONALIZADO', bc:'var(--acc)',
+        d: bl.crisis_count > 0
+          ? `Tu firma pre-crisis: HRV ~${Math.round(bl.pre_crisis_hrv||0)}ms, sueño ~${(bl.pre_crisis_sleep||0).toFixed(1)}h, estrés ~${Math.round(bl.pre_crisis_stress||0)}%.`
+          : `Perfil construido con ${bl.samples} lecturas. Registrá eventos de crisis para completar el análisis.`,
+        a: null,
+      });
+    }
+
     const sleep = v.sleep_hours || 0;
-    if (sleep < 6) ins.push({ e:'🌙', t:'Sueño insuficiente', c:'#60A5FA', badge:'ATENCIÓN', bc:'var(--hgh)',
-      d:`Dormiste ${sleep}h. La privación de sueño es factor de riesgo documentado.`, a:'Establecer rutina de sueño' });
-    else ins.push({ e:'🌙', t:'Sueño adecuado', c:'#60A5FA', badge:'OK', bc:'var(--low)',
-      d:`Dormiste ${sleep}h esta noche. Buen descanso.`, a:null });
+    const avgSleep = isPersonal ? bl.avg_sleep : 7;
+    if (sleep < avgSleep * 0.85 || sleep < 6) {
+      ins.push({ e:'🌙', t:'Sueño por debajo de tu normal', c:'#60A5FA', badge:'ATENCIÓN', bc:'var(--hgh)',
+        d: isPersonal
+          ? `Dormiste ${sleep}h. Tu promedio personal es ${avgSleep.toFixed(1)}h. Déficit de sueño es factor de riesgo.`
+          : `Dormiste ${sleep}h. La privación de sueño es factor de riesgo documentado.`,
+        a: 'Establecer rutina de sueño' });
+    } else {
+      ins.push({ e:'🌙', t:'Sueño adecuado', c:'#60A5FA', badge:'OK', bc:'var(--low)',
+        d: `Dormiste ${sleep}h${isPersonal ? ` (tu promedio: ${avgSleep.toFixed(1)}h)` : ''}. Buen descanso.`, a: null });
+    }
 
     const hrv = v.hrv || 0;
-    if (hrv >= 45) ins.push({ e:'⚡', t:'HRV estable', c:'var(--acc)', badge:'OK', bc:'var(--low)',
-      d:`HRV ${hrv}ms — dentro de parámetros normales. Buena recuperación del sistema nervioso.`, a:null });
-    else ins.push({ e:'⚡', t:'HRV reducida', c:'var(--acc)', badge:'INFO', bc:'var(--mid)',
-      d:`HRV ${hrv}ms — por debajo del rango óptimo. Considerá descanso adicional.`, a:null });
+    const avgHrv = isPersonal ? bl.avg_hrv : 45;
+    if (hrv < avgHrv * 0.85 || hrv < 35) {
+      ins.push({ e:'⚡', t:'HRV reducida', c:'var(--acc)', badge:'INFO', bc:'var(--mid)',
+        d: isPersonal
+          ? `HRV ${hrv}ms, ${Math.round(((avgHrv - hrv) / avgHrv) * 100)}% bajo tu promedio (${Math.round(avgHrv)}ms). Considerá descanso.`
+          : `HRV ${hrv}ms — por debajo del rango óptimo. Considerá descanso adicional.`,
+        a: null });
+    } else {
+      ins.push({ e:'⚡', t:'HRV estable', c:'var(--acc)', badge:'OK', bc:'var(--low)',
+        d: `HRV ${hrv}ms${isPersonal ? ` (tu promedio: ${Math.round(avgHrv)}ms)` : ''} — dentro de parámetros normales.`, a: null });
+    }
 
     const st = v.stress_pct || 0;
-    if (st > 60) ins.push({ e:'🧠', t:'Estrés elevado', c:'#A78BFA', badge:'INFO', bc:'var(--mid)',
-      d:`Nivel de estrés ${st}%. El estrés puede modular el umbral de excitabilidad neuronal.`, a:'Ver técnicas de manejo' });
+    const avgStress = isPersonal ? bl.avg_stress : 50;
+    if (st > avgStress * 1.25 || st > 65) {
+      ins.push({ e:'🧠', t:'Estrés elevado', c:'#A78BFA', badge:'INFO', bc:'var(--mid)',
+        d: `Estrés ${st}%${isPersonal ? ` (tu promedio: ${Math.round(avgStress)}%)` : ''}. El estrés puede modular el umbral de excitabilidad neuronal.`,
+        a: 'Ver técnicas de manejo' });
+    }
+
+    if (bl?.crisis_count >= 1) {
+      const match = getPatternMatch();
+      if (match > 0) {
+        ins.push({ e:'🔬', t:'Análisis patrón pre-crisis', c:'#F87171', badge:`${match}% SIMILITUD`,
+          bc: match >= 60 ? 'var(--hgh)' : match >= 30 ? 'var(--mid)' : 'var(--low)',
+          d: `Basado en ${bl.crisis_count} crisis registradas. Similitud actual: ${match}%${match >= 60 ? ' — considera tomar tu medicación preventiva.' : '.'}`,
+          a: null });
+      }
+    }
   }
 
   document.getElementById('ins-list').innerHTML = ins.map(i => `
@@ -832,26 +1161,128 @@ function renderInsights() {
     </div></div>`).join('');
 }
 
-// ── Profile stats ─────────────────────────────────────────────────────────────
+// ── Perfil ────────────────────────────────────────────────────────────────────
 function renderProfile() {
   document.getElementById('st-events').textContent = allEvents.length || '0';
   document.getElementById('st-vitals').textContent = allVitals.length || '0';
-  const score = calcRisk(lastVitals);
+  const score = calcPersonalRisk(lastVitals);
   document.getElementById('st-risk').textContent = lastVitals ? score : '–';
-  document.getElementById('st-risk').style.color = lastVitals ? riskColor(score) : 'var(--acc)';
+  document.getElementById('st-risk').style.color  = lastVitals ? riskColor(score) : 'var(--acc)';
 
-  // Days since first record
   const all = [...allEvents, ...allVitals];
   if (all.length) {
     const first = new Date(Math.min(...all.map(r => new Date(r.recorded_at || r.created_at))));
-    const days = Math.max(1, Math.round((Date.now() - first) / 86400000));
-    document.getElementById('st-days').textContent = days;
+    document.getElementById('st-days').textContent = Math.max(1, Math.round((Date.now() - first) / 86400000));
   } else {
     document.getElementById('st-days').textContent = '1';
   }
+
+  // Estado del modelo
+  const bl = userBaseline;
+  const samples = bl?.samples || 0;
+  document.getElementById('model-samples-lbl').textContent = `${samples} lecturas`;
+  document.getElementById('model-bar').style.width = Math.min(100, Math.round((samples/30)*100)) + '%';
+  if (!bl || samples === 0) {
+    document.getElementById('model-status-lbl').textContent = 'Sin datos aún';
+  } else if (samples < MIN_SAMPLES) {
+    document.getElementById('model-status-lbl').textContent = `Aprendiendo (${MIN_SAMPLES - samples} más para activar)`;
+  } else {
+    document.getElementById('model-status-lbl').textContent = samples >= 30 ? 'Modelo completo ✓' : `Modelo activo (${Math.round((samples/30)*100)}%)`;
+  }
+  if (bl?.crisis_count > 0) {
+    document.getElementById('model-crisis-info').style.display = 'block';
+    document.getElementById('model-crisis-desc').textContent =
+      `Firma pre-crisis aprendida de ${bl.crisis_count} evento${bl.crisis_count > 1 ? 's' : ''}: HRV ~${Math.round(bl.pre_crisis_hrv||0)}ms, sueño ~${(bl.pre_crisis_sleep||0).toFixed(1)}h, estrés ~${Math.round(bl.pre_crisis_stress||0)}%.`;
+  }
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// ── Push notifications ────────────────────────────────────────────────────────
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    updatePushUI('No compatible con este navegador', false, true);
+    return;
+  }
+  try {
+    await navigator.serviceWorker.register('/sw.js');
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    updatePushUI(existing ? 'Activas' : 'No activadas', !!existing, false);
+  } catch (e) {
+    updatePushUI('Error al registrar', false, true);
+  }
+}
+
+function updatePushUI(text, active, disabled) {
+  const lbl = document.getElementById('push-status-lbl');
+  const btn = document.getElementById('push-btn');
+  if (lbl) lbl.textContent = text;
+  if (btn) {
+    btn.textContent = active ? 'Desactivar' : 'Activar';
+    btn.className = active ? 'push-btn active' : 'push-btn';
+    btn.disabled = !!disabled;
+  }
+}
+
+async function togglePush() {
+  if (!('serviceWorker' in navigator)) return;
+  const reg = await navigator.serviceWorker.ready;
+  const existing = await reg.pushManager.getSubscription();
+  if (existing) {
+    await existing.unsubscribe();
+    await sb.from('push_subscriptions').delete()
+      .eq('user_id', currentUser.id).eq('endpoint', existing.endpoint);
+    updatePushUI('No activadas', false, false);
+    showToast('Notificaciones desactivadas', 'ok');
+  } else {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { showToast('Permiso denegado', 'err'); return; }
+    try {
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlB64ToUint8(VAPID_PUBLIC),
+      });
+      const j = sub.toJSON();
+      await sb.from('push_subscriptions').upsert({
+        user_id: currentUser.id,
+        endpoint: j.endpoint,
+        p256dh:   j.keys?.p256dh,
+        auth_key: j.keys?.auth,
+      });
+      updatePushUI('Activas ✓', true, false);
+      showToast('Notificaciones activadas ✓', 'ok');
+    } catch (e) {
+      showToast('Error al activar notificaciones', 'err');
+    }
+  }
+}
+
+async function sendPushAlert(score, match) {
+  if (!currentUser) return;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    await fetch(`https://wsiaflvanlmqancysopl.supabase.co/functions/v1/send-push`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+      body: JSON.stringify({
+        score, patternMatch: match,
+        title: score >= 80 ? '🚨 Alerta crítica - Intrun' : '⚠️ Riesgo elevado - Intrun',
+        body: match > 0
+          ? `Patrón pre-crisis: ${match}% de coincidencia · Riesgo: ${score}/100`
+          : `Riesgo ${score}/100 · Revisá tus signos vitales`,
+      }),
+    });
+  } catch {}
+}
+
+function urlB64ToUint8(b64) {
+  const padding = '='.repeat((4 - b64.length % 4) % 4);
+  const base64  = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw     = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+// ── Modal evento ──────────────────────────────────────────────────────────────
 function renderEtypes() {
   document.getElementById('etype-grid').innerHTML = Object.entries(ET).map(([k, c]) => `
     <button class="etype-btn${selType === k ? ' on' : ''}" onclick="selEtype('${k}')"
@@ -881,39 +1312,47 @@ function openModal() {
   renderEtypes();
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('on') }
-function overlayClick(e) { if (e.target === document.getElementById('modal')) closeModal() }
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+function overlayClick(e) { if (e.target === document.getElementById('modal')) closeModal(); }
 
 async function saveEv() {
   if (!selType) return;
   const notes    = document.getElementById('note').value.trim();
   const severity = parseInt(document.getElementById('slider').value);
-
   const { error } = await sb.from('events').insert({
-    user_id:     currentUser.id,
-    type:        selType,
-    severity,
-    notes:       notes || null,
-    recorded_at: new Date().toISOString(),
+    user_id: currentUser.id, type: selType, severity,
+    notes: notes || null, recorded_at: new Date().toISOString(),
   });
-
   if (error) { showToast('Error al guardar', 'err'); return; }
   closeModal();
   await loadEvents();
+  // Si es crisis, extraer patrón pre-crisis y actualizar modelo
+  if (selType === 'crisis' && allEvents.length > 0) {
+    if (!userBaseline) await bootstrapBaseline();
+    else {
+      await _extractPreCrisis(allEvents[0]);
+      await saveBaseline();
+    }
+    renderPrediction();
+    renderInsights();
+    renderProfile();
+    showToast('Crisis registrada · Modelo actualizado ✓', 'ok');
+  } else {
+    showToast('Evento registrado ✓', 'ok');
+  }
   renderEvList();
   renderAllEvs();
   renderProfile();
-  showToast('Evento registrado ✓', 'ok');
 }
 
-// ── Navigation ────────────────────────────────────────────────────────────────
-const SCREENS = ['dash', 'hist', 'ins', 'prof'];
+// ── Navegación ────────────────────────────────────────────────────────────────
+const SCREENS = ['dash','hist','ins','prof'];
 function go(name) {
   SCREENS.forEach(s => {
-    document.getElementById('s-' + s).classList.toggle('on', s === name);
-    document.getElementById('nb-' + s).classList.toggle('on', s === name);
+    document.getElementById('s-'+s).classList.toggle('on', s === name);
+    document.getElementById('nb-'+s).classList.toggle('on', s === name);
   });
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  window.scrollTo({ top:0, behavior:'instant' });
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
@@ -921,7 +1360,7 @@ function showToast(msg, type = 'ok') {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = `toast ${type} on`;
-  setTimeout(() => el.classList.remove('on'), 2500);
+  setTimeout(() => el.classList.remove('on'), 2800);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -931,10 +1370,7 @@ const fmtD = ts => new Date(ts).toLocaleDateString('es-AR', {day:'2-digit', mont
 // ── Boot ──────────────────────────────────────────────────────────────────────
 (async () => {
   const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) {
-    await initApp(session.user);
-  }
-  // Listen for auth changes
+  if (session?.user) await initApp(session.user);
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) await initApp(session.user);
   });
