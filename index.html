@@ -285,8 +285,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <div class="vgrid">
       <div class="vital"><div class="vlbl">❤️ FC</div><div><span class="vval" id="v-hr">–</span><span class="vunit">bpm</span></div></div>
       <div class="vital"><div class="vlbl">⚡ HRV</div><div><span class="vval" id="v-hrv">–</span><span class="vunit">ms</span></div></div>
+      <div class="vital"><div class="vlbl">🩸 SpO2</div><div><span class="vval" id="v-spo2">–</span><span class="vunit">%</span></div></div>
+      <div class="vital"><div class="vlbl">🌡️ Temp</div><div><span class="vval" id="v-temp">–</span><span class="vunit">°C</span></div></div>
       <div class="vital"><div class="vlbl">🌙 Sueño</div><div><span class="vval" id="v-sleep">–</span><span class="vunit">h</span></div></div>
-      <div class="vital"><div class="vlbl">👟 Pasos</div><div><span class="vval" id="v-steps">–</span></div></div>
+      <div class="vital"><div class="vlbl">🫁 Resp</div><div><span class="vval" id="v-resp">–</span><span class="vunit">rpm</span></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-top:1px solid var(--b1);margin-top:.25rem">
+      <span style="font-size:.6rem;color:var(--t3)">👟 Pasos</span>
+      <span style="font-size:.875rem;font-family:'DM Mono',monospace;color:var(--t1)" id="v-steps">–</span>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;margin-bottom:.375rem">
@@ -613,19 +619,27 @@ async function bootstrapBaseline() {
   const hv = vals('hrv'), sv = vals('sleep_hours'), hrv = vals('heart_rate'), stv = vals('stress_pct');
   const ah = avg(hv), as_ = avg(sv), ahr = avg(hrv) || 70, ast = avg(stv) || 50;
 
+  const spv = vals('spo2'), btv = vals('body_temp'), rrv = vals('resp_rate');
+  const asp = avg(spv)||98, abt = avg(btv)||36.5, arr_ = avg(rrv)||15;
+
   userBaseline = {
-    user_id:       currentUser.id,
-    avg_hrv:       ah,   avg_sleep:  as_,  avg_hr:     ahr,  avg_stress: ast,
-    avg_steps:     avg(vals('steps')),
-    std_hrv:       stdDev(hv, ah)   ?? 5,
-    std_sleep:     stdDev(sv, as_)  ?? 0.5,
-    std_hr:        stdDev(hrv, ahr) ?? 8,
-    std_stress:    stdDev(stv, ast) ?? 10,
-    samples:       vitals.length,
-    crisis_count:  0,
-    pre_crisis_hrv: null, pre_crisis_sleep: null,
-    pre_crisis_stress: null, pre_crisis_hr: null,
-    last_alert_at: null,
+    user_id:        currentUser.id,
+    avg_hrv:        ah,   avg_sleep:     as_,  avg_hr:        ahr,  avg_stress:    ast,
+    avg_spo2:       asp,  avg_body_temp: abt,  avg_resp_rate: arr_,
+    avg_steps:      avg(vals('steps')),
+    std_hrv:        stdDev(hv,  ah)   ?? 5,
+    std_sleep:      stdDev(sv,  as_)  ?? 0.5,
+    std_hr:         stdDev(hrv, ahr)  ?? 8,
+    std_stress:     stdDev(stv, ast)  ?? 10,
+    std_spo2:       stdDev(spv, asp)  ?? 1,
+    std_body_temp:  stdDev(btv, abt)  ?? 0.3,
+    std_resp_rate:  stdDev(rrv, arr_) ?? 2,
+    samples:        vitals.length,
+    crisis_count:   0,
+    pre_crisis_hrv: null, pre_crisis_sleep: null, pre_crisis_stress: null,
+    pre_crisis_hr:  null, pre_crisis_spo2:  null, pre_crisis_body_temp: null,
+    pre_crisis_resp_rate: null,
+    last_alert_at:  null,
   };
 
   const crises = allEvents.filter(e => e.type === 'crisis');
@@ -650,10 +664,13 @@ function emaStd(std, mean, newVal, alpha) {
 async function updateBaselineWithVital(v) {
   if (!v || !userBaseline) return;
   const bl = userBaseline, a = BASELINE_ALPHA;
-  if (v.hrv)         { bl.std_hrv    = emaStd(bl.std_hrv,    bl.avg_hrv,    v.hrv,         a); bl.avg_hrv    = ema(bl.avg_hrv,    v.hrv,         a); }
-  if (v.sleep_hours) { bl.std_sleep  = emaStd(bl.std_sleep,  bl.avg_sleep,  v.sleep_hours, a); bl.avg_sleep  = ema(bl.avg_sleep,  v.sleep_hours, a); }
-  if (v.heart_rate)  { bl.std_hr     = emaStd(bl.std_hr,     bl.avg_hr,     v.heart_rate,  a); bl.avg_hr     = ema(bl.avg_hr,     v.heart_rate,  a); }
-  if (v.stress_pct)  { bl.std_stress = emaStd(bl.std_stress, bl.avg_stress, v.stress_pct,  a); bl.avg_stress = ema(bl.avg_stress, v.stress_pct,  a); }
+  if (v.hrv)         { bl.std_hrv        = emaStd(bl.std_hrv,        bl.avg_hrv,        v.hrv,         a); bl.avg_hrv        = ema(bl.avg_hrv,        v.hrv,         a); }
+  if (v.sleep_hours) { bl.std_sleep      = emaStd(bl.std_sleep,      bl.avg_sleep,      v.sleep_hours, a); bl.avg_sleep      = ema(bl.avg_sleep,      v.sleep_hours, a); }
+  if (v.heart_rate)  { bl.std_hr         = emaStd(bl.std_hr,         bl.avg_hr,         v.heart_rate,  a); bl.avg_hr         = ema(bl.avg_hr,         v.heart_rate,  a); }
+  if (v.stress_pct)  { bl.std_stress     = emaStd(bl.std_stress,     bl.avg_stress,     v.stress_pct,  a); bl.avg_stress     = ema(bl.avg_stress,     v.stress_pct,  a); }
+  if (v.spo2)        { bl.std_spo2       = emaStd(bl.std_spo2||1,    bl.avg_spo2||98,   v.spo2,        a); bl.avg_spo2       = ema(bl.avg_spo2||98,   v.spo2,        a); }
+  if (v.body_temp)   { bl.std_body_temp  = emaStd(bl.std_body_temp||.3, bl.avg_body_temp||36.5, v.body_temp, a); bl.avg_body_temp = ema(bl.avg_body_temp||36.5, v.body_temp, a); }
+  if (v.resp_rate)   { bl.std_resp_rate  = emaStd(bl.std_resp_rate||2, bl.avg_resp_rate||15,   v.resp_rate, a); bl.avg_resp_rate = ema(bl.avg_resp_rate||15,   v.resp_rate, a); }
   if (v.steps)       bl.avg_steps = ema(bl.avg_steps, v.steps, a);
   bl.samples = (bl.samples || 0) + 1;
   await saveBaseline();
@@ -672,10 +689,13 @@ async function _extractPreCrisis(crisisEvent) {
     return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
   };
   const bl = userBaseline, a = CRISIS_ALPHA;
-  bl.pre_crisis_hrv    = ema(bl.pre_crisis_hrv,    avg('hrv'),          a);
-  bl.pre_crisis_sleep  = ema(bl.pre_crisis_sleep,  avg('sleep_hours'),  a);
-  bl.pre_crisis_stress = ema(bl.pre_crisis_stress, avg('stress_pct'),   a);
-  bl.pre_crisis_hr     = ema(bl.pre_crisis_hr,     avg('heart_rate'),   a);
+  bl.pre_crisis_hrv       = ema(bl.pre_crisis_hrv,       avg('hrv'),          a);
+  bl.pre_crisis_sleep     = ema(bl.pre_crisis_sleep,     avg('sleep_hours'),  a);
+  bl.pre_crisis_stress    = ema(bl.pre_crisis_stress,    avg('stress_pct'),   a);
+  bl.pre_crisis_hr        = ema(bl.pre_crisis_hr,        avg('heart_rate'),   a);
+  bl.pre_crisis_spo2      = ema(bl.pre_crisis_spo2,      avg('spo2'),         a);
+  bl.pre_crisis_body_temp = ema(bl.pre_crisis_body_temp, avg('body_temp'),    a);
+  bl.pre_crisis_resp_rate = ema(bl.pre_crisis_resp_rate, avg('resp_rate'),    a);
   bl.crisis_count = (bl.crisis_count || 0) + 1;
 }
 
@@ -684,13 +704,19 @@ function calcRisk(v) {
   if (!v) return 0;
   let s = 0;
   const hrv = v.hrv || 0;
-  s += hrv >= 50 ? 0 : hrv >= 35 ? 10 : hrv >= 20 ? 18 : 25;
+  s += hrv >= 50 ? 0 : hrv >= 35 ? 8 : hrv >= 20 ? 14 : 20;
   const sl = v.sleep_hours || 0;
-  s += sl >= 7.5 ? 0 : sl >= 6 ? 8 : sl >= 5 ? 16 : 25;
+  s += sl >= 7.5 ? 0 : sl >= 6 ? 6 : sl >= 5 ? 12 : 18;
   const st = v.stress_pct || 0;
-  s += st < 40 ? 0 : st < 60 ? 5 : st < 80 ? 10 : 15;
+  s += st < 40 ? 0 : st < 60 ? 4 : st < 80 ? 8 : 12;
   const hr = v.heart_rate || 70;
-  s += hr >= 50 && hr <= 100 ? 0 : hr > 100 ? 10 : 5;
+  s += hr >= 50 && hr <= 100 ? 0 : hr > 100 ? 8 : 4;
+  const sp = v.spo2 || 99;
+  s += sp >= 97 ? 0 : sp >= 95 ? 5 : sp >= 92 ? 15 : 25;
+  const bt = v.body_temp || 36.6;
+  s += bt >= 36.1 && bt <= 37.2 ? 0 : bt > 37.5 ? 18 : bt > 37.2 ? 7 : 4;
+  const rr = v.resp_rate || 16;
+  s += rr >= 12 && rr <= 20 ? 0 : rr > 25 ? 7 : rr > 20 ? 3 : 5;
   return Math.min(100, s);
 }
 
@@ -706,11 +732,14 @@ function calcPersonalRisk(v) {
     return Math.max(0, Math.min(weight, (z / 1.5) * weight));
   };
 
-  score += zContrib(bl.avg_hrv,    bl.std_hrv,    v.hrv,          'low',  28);
-  score += zContrib(bl.avg_sleep,  bl.std_sleep,  v.sleep_hours,  'low',  25);
-  score += zContrib(bl.avg_stress, bl.std_stress, v.stress_pct,   'high', 22);
+  score += zContrib(bl.avg_hrv,        bl.std_hrv,        v.hrv,         'low',  18);
+  score += zContrib(bl.avg_sleep,      bl.std_sleep,      v.sleep_hours, 'low',  15);
+  score += zContrib(bl.avg_stress,     bl.std_stress,     v.stress_pct,  'high', 12);
+  score += zContrib(bl.avg_spo2||98,   bl.std_spo2||1,    v.spo2,        'low',  20);
+  score += zContrib(bl.avg_body_temp||36.5, bl.std_body_temp||.3, v.body_temp, 'high', 12);
+  score += zContrib(bl.avg_resp_rate||15,   bl.std_resp_rate||2,  v.resp_rate, 'high', 8);
   const hr = v.heart_rate || bl.avg_hr;
-  score += hr < 50 || hr > 105 ? 15 : hr > 95 ? 7 : 0;
+  score += hr < 50 || hr > 105 ? 10 : hr > 95 ? 5 : 0;
 
   if (bl.pre_crisis_hrv && bl.crisis_count >= 1) {
     score += (getPatternMatchFromVital(v) / 100) * 20;
@@ -722,10 +751,13 @@ function getPatternMatchFromVital(v) {
   const bl = userBaseline;
   if (!bl || !bl.pre_crisis_hrv || bl.crisis_count < 1) return 0;
   let ok = 0, total = 0;
-  if (v.hrv         != null && bl.pre_crisis_hrv)    { total++; if (v.hrv         <= bl.pre_crisis_hrv    * 1.15) ok++; }
-  if (v.sleep_hours != null && bl.pre_crisis_sleep)  { total++; if (v.sleep_hours <= bl.pre_crisis_sleep  * 1.15) ok++; }
-  if (v.stress_pct  != null && bl.pre_crisis_stress) { total++; if (v.stress_pct  >= bl.pre_crisis_stress * 0.85) ok++; }
-  if (v.heart_rate  != null && bl.pre_crisis_hr)     { total++; if (Math.abs(v.heart_rate - bl.pre_crisis_hr) < bl.std_hr * 2) ok++; }
+  if (v.hrv         != null && bl.pre_crisis_hrv)       { total++; if (v.hrv         <= bl.pre_crisis_hrv       * 1.15) ok++; }
+  if (v.sleep_hours != null && bl.pre_crisis_sleep)     { total++; if (v.sleep_hours <= bl.pre_crisis_sleep     * 1.15) ok++; }
+  if (v.stress_pct  != null && bl.pre_crisis_stress)    { total++; if (v.stress_pct  >= bl.pre_crisis_stress    * 0.85) ok++; }
+  if (v.heart_rate  != null && bl.pre_crisis_hr)        { total++; if (Math.abs(v.heart_rate - bl.pre_crisis_hr) < (bl.std_hr||8) * 2) ok++; }
+  if (v.spo2        != null && bl.pre_crisis_spo2)      { total++; if (v.spo2        <= bl.pre_crisis_spo2      * 1.02) ok++; }
+  if (v.body_temp   != null && bl.pre_crisis_body_temp) { total++; if (v.body_temp   >= bl.pre_crisis_body_temp * 0.99) ok++; }
+  if (v.resp_rate   != null && bl.pre_crisis_resp_rate) { total++; if (v.resp_rate   >= bl.pre_crisis_resp_rate * 0.90) ok++; }
   return total > 0 ? Math.round((ok / total) * 100) : 0;
 }
 
@@ -843,10 +875,13 @@ function renderAll() {
 // ── Vitales ───────────────────────────────────────────────────────────────────
 function renderVitals() {
   const v = lastVitals;
-  const set = (id, val) => { document.getElementById(id).textContent = val != null ? val : '–'; };
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val != null ? val : '–'; };
   set('v-hr',    v?.heart_rate);
   set('v-hrv',   v?.hrv);
   set('v-sleep', v?.sleep_hours);
+  set('v-spo2',  v?.spo2);
+  set('v-temp',  v?.body_temp);
+  set('v-resp',  v?.resp_rate);
   set('v-steps', v?.steps ? v.steps.toLocaleString() : '–');
   document.getElementById('last-sync-lbl').textContent =
     v ? 'última: ' + fmt(v.recorded_at) : 'Sin datos aún';
@@ -855,10 +890,10 @@ function renderVitals() {
     document.getElementById('dot-sleep').style.background  = dotColor(v.sleep_hours, 7, 5);
     document.getElementById('dot-hr').style.background     = v.heart_rate >= 50 && v.heart_rate <= 100 ? 'var(--low)' : 'var(--mid)';
     document.getElementById('dot-stress').style.background = dotColor(100 - (v.stress_pct||0), 60, 40);
-    document.getElementById('val-hrv').textContent    = v.hrv         ? v.hrv + ' ms'        : '–';
-    document.getElementById('val-sleep').textContent  = v.sleep_hours ? v.sleep_hours + ' h' : '–';
-    document.getElementById('val-hr').textContent     = v.heart_rate  ? v.heart_rate + ' bpm': '–';
-    document.getElementById('val-stress').textContent = v.stress_pct  ? v.stress_pct + ' %'  : '–';
+    document.getElementById('val-hrv').textContent    = v.hrv         ? v.hrv + ' ms'         : '–';
+    document.getElementById('val-sleep').textContent  = v.sleep_hours ? v.sleep_hours + ' h'  : '–';
+    document.getElementById('val-hr').textContent     = v.heart_rate  ? v.heart_rate + ' bpm' : '–';
+    document.getElementById('val-stress').textContent = v.stress_pct  ? v.stress_pct + ' %'   : '–';
   }
 }
 
@@ -1134,6 +1169,30 @@ function renderInsights() {
       ins.push({ e:'🧠', t:'Estrés elevado', c:'#A78BFA', badge:'INFO', bc:'var(--mid)',
         d: `Estrés ${st}%${isPersonal ? ` (tu promedio: ${Math.round(avgStress)}%)` : ''}. El estrés puede modular el umbral de excitabilidad neuronal.`,
         a: 'Ver técnicas de manejo' });
+    }
+
+    const sp = v.spo2;
+    if (sp != null) {
+      if (sp < 94) {
+        ins.push({ e:'🩸', t:'SpO2 crítica', c:'#F87171', badge:'CRÍTICO', bc:'var(--hgh)',
+          d: `Saturación de oxígeno ${sp}%. Por debajo de 94% puede ser factor desencadenante. Consultá tu médico.`, a: null });
+      } else if (sp < 97) {
+        ins.push({ e:'🩸', t:'SpO2 levemente baja', c:'#FBBF24', badge:'ATENCIÓN', bc:'var(--mid)',
+          d: `Saturación ${sp}%. Lo normal es ≥97%. Controlá tu respiración y ventilación.`, a: null });
+      }
+    }
+
+    const bt = v.body_temp;
+    if (bt != null && bt > 37.2) {
+      ins.push({ e:'🌡️', t: bt > 37.5 ? 'Fiebre detectada' : 'Temperatura elevada', c:'#F87171',
+        badge: bt > 37.5 ? 'ALERTA' : 'ATENCIÓN', bc: bt > 37.5 ? 'var(--hgh)' : 'var(--mid)',
+        d: `Temperatura corporal ${bt}°C. ${bt > 37.5 ? 'La fiebre es factor de riesgo significativo para convulsiones.' : 'Temperatura levemente elevada, monitoreá.'}`, a: null });
+    }
+
+    const rr = v.resp_rate;
+    if (rr != null && (rr > 20 || rr < 12)) {
+      ins.push({ e:'🫁', t: rr > 20 ? 'Respiración acelerada' : 'Respiración lenta', c:'#60A5FA', badge:'INFO', bc:'var(--mid)',
+        d: `Frecuencia respiratoria: ${rr} rpm. Normal: 12-20 rpm. Puede indicar estrés fisiológico.`, a: null });
     }
 
     if (bl?.crisis_count >= 1) {
