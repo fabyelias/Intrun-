@@ -706,15 +706,24 @@ async function _extractPreCrisis(crisisEvent) {
 }
 
 // ── Riesgo personalizado ──────────────────────────────────────────────────────
+function parseDurToken(tok) {
+  const s = tok.trim();
+  if (!s) return 0;
+  const parts = s.split(':').map(Number);
+  if (parts.length === 1) return isNaN(parts[0]) ? 0 : parts[0] / 3600;
+  const [a, b] = parts;
+  if (a >= 12) return (a * 60 + b) / 3600;   // MM:SS (>= 12 min, no puede ser horas)
+  const asH = a + b / 60;
+  return asH >= 0.25 ? asH : (a * 60 + b) / 3600; // prefiere H:MM si >= 15 min
+}
+
 function parseSleep(x) {
   if (x == null || x === '') return null;
-  const s = String(x).trim();
-  if (s.includes(':')) {
-    const [h, m] = s.split(':').map(Number);
-    return h + (isNaN(m) ? 0 : m) / 60;
-  }
-  const v = parseFloat(s);
-  return isNaN(v) ? null : v > 24 ? v / 3600 : v;
+  const tokens = String(x).trim().split('\n').map(t => t.trim()).filter(Boolean);
+  if (!tokens.length) return null;
+  const vals = tokens.map(parseDurToken).filter(v => v > 0);
+  if (!vals.length) return null;
+  return tokens.length > 1 ? Math.max(...vals) : vals[0];
 }
 
 function calcRisk(v) {
