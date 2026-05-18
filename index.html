@@ -706,12 +706,14 @@ async function _extractPreCrisis(crisisEvent) {
 }
 
 // ── Riesgo personalizado ──────────────────────────────────────────────────────
+function parseSleep(x) { const v = parseFloat(x); return isNaN(v) ? 0 : v > 24 ? v/3600 : v; }
+
 function calcRisk(v) {
   if (!v) return 0;
   let s = 0;
-  const hrv = v.hrv || 0;
+  const hrv = parseFloat(v.hrv) || 0;
   s += hrv >= 50 ? 0 : hrv >= 35 ? 8 : hrv >= 20 ? 14 : 20;
-  const sl = v.sleep_hours || 0;
+  const sl = parseSleep(v.sleep_hours);
   s += sl >= 7.5 ? 0 : sl >= 6 ? 6 : sl >= 5 ? 12 : 18;
   const st = v.stress_pct || 0;
   s += st < 40 ? 0 : st < 60 ? 4 : st < 80 ? 8 : 12;
@@ -1029,12 +1031,14 @@ function renderAll() {
 function renderVitals() {
   const v = lastVitals;
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val != null ? val : '–'; };
-  set('v-hr',    v?.heart_rate);
-  set('v-hrv',   v?.hrv);
-  set('v-sleep', v?.sleep_hours);
-  set('v-spo2',  v?.spo2);
-  set('v-temp',  v?.body_temp);
-  set('v-resp',  v?.resp_rate);
+  const n = x => { const f = parseFloat(x); return isNaN(f) ? null : f; };
+  const toH = x => { const v = n(x); return v == null ? null : v > 24 ? +(v/3600).toFixed(1) : +v.toFixed(1); };
+  set('v-hr',    n(v?.heart_rate) != null ? Math.round(n(v.heart_rate))        : null);
+  set('v-hrv',   n(v?.hrv)        != null ? Math.round(n(v.hrv))               : null);
+  set('v-sleep', toH(v?.sleep_hours));
+  set('v-spo2',  n(v?.spo2)       != null ? Math.round(n(v.spo2))              : null);
+  set('v-temp',  n(v?.body_temp)  != null ? +n(v.body_temp).toFixed(1)         : null);
+  set('v-resp',  n(v?.resp_rate)  != null ? Math.round(n(v.resp_rate))         : null);
   set('v-steps', v?.steps ? v.steps.toLocaleString() : '–');
   document.getElementById('last-sync-lbl').textContent =
     v ? 'última: ' + fmt(v.recorded_at) : 'Sin datos aún';
